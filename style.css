@@ -1,3 +1,6 @@
+/* 引入 Orbitron 字体（英文标题用） */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
 /* 基础重置 */
 * {
   margin: 0;
@@ -5,10 +8,20 @@
   box-sizing: border-box;
 }
 
+/* 全局变量 */
+:root {
+  --bg-color: #0a0e14;
+  --primary-color: #00e5ff;
+  --text-color: #f0f0f0;
+  --text-muted: #8a94a6;
+  --card-bg: #11161f;
+  --border-color: #1e2633;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-  color: #1a1a1a;
-  background: #f7f8fa;
+  color: var(--text-color);
+  background: var(--bg-color);
   line-height: 1.6;
 }
 
@@ -21,9 +34,9 @@ a {
 .site-header {
   position: sticky;
   top: 0;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid #eaeaea;
+  background: rgba(10, 14, 20, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
   z-index: 100;
 }
 
@@ -39,6 +52,9 @@ a {
 .brand {
   font-weight: 700;
   font-size: 1.1rem;
+  color: var(--primary-color);
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1px;
 }
 
 .nav-links {
@@ -48,12 +64,13 @@ a {
 }
 
 .nav-links a {
-  color: #444;
+  color: var(--text-muted);
   font-size: 0.95rem;
+  transition: color 0.2s ease;
 }
 
 .nav-links a:hover {
-  color: #2563eb;
+  color: var(--primary-color);
 }
 
 .menu-toggle {
@@ -62,54 +79,94 @@ a {
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
+  color: var(--primary-color);
 }
 
 /* Hero */
 .hero {
   max-width: 960px;
   margin: 0 auto;
-  padding: 4rem 1.5rem 3rem;
+  padding: 5rem 1.5rem 4rem;
   text-align: center;
+  position: relative;
+}
+
+/* Hero 背景径向渐变 */
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 30%, rgba(0, 229, 255, 0.12), transparent 60%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .avatar {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: #2563eb;
-  color: #fff;
+  background: transparent;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.8rem;
   font-weight: 700;
-  margin: 0 auto 1.2rem;
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
 }
 
 .hero h1 {
-  font-size: 2rem;
-  margin-bottom: 0.6rem;
+  font-size: 2.2rem;
+  margin-bottom: 0.8rem;
+  font-weight: 700;
 }
 
 .highlight {
-  color: #2563eb;
+  color: var(--primary-color);
+}
+
+/* 发光效果 */
+.glow {
+  text-shadow: 0 0 5px var(--primary-color),
+               0 0 15px rgba(0, 229, 255, 0.6),
+               0 0 30px rgba(0, 229, 255, 0.3);
+  animation: holographic-glow 3s ease-in-out infinite;
+}
+
+@keyframes holographic-glow {
+  0%, 100% {
+    text-shadow: 0 0 5px var(--primary-color),
+                 0 0 15px rgba(0, 229, 255, 0.6),
+                 0 0 30px rgba(0, 229, 255, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 10px var(--primary-color),
+                 0 0 25px rgba(0, 229, 255, 0.8),
+                 0 0 45px rgba(0, 229, 255, 0.5);
+  }
 }
 
 .tagline {
-  color: #333;
+  color: var(--text-color);
   font-size: 1.1rem;
   margin-bottom: 0.4rem;
 }
 
 .sub-tagline {
-  color: #777;
+  color: var(--text-muted);
   font-size: 0.95rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .hero-actions {
   display: flex;
-  gap: 0.8rem;
+  gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
 }
@@ -117,28 +174,35 @@ a {
 /* 按钮 */
 .btn {
   display: inline-block;
-  padding: 0.6rem 1.2rem;
+  padding: 0.7rem 1.5rem;
   border-radius: 8px;
   font-size: 0.95rem;
   transition: all 0.2s ease;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.5px;
 }
 
 .btn-primary {
-  background: #2563eb;
-  color: #fff;
+  background: var(--primary-color);
+  color: var(--bg-color);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
 }
 
 .btn-primary:hover {
-  background: #1d4ed8;
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.7);
+  transform: translateY(-2px);
 }
 
 .btn-ghost {
-  border: 1px solid #2563eb;
-  color: #2563eb;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  background: transparent;
 }
 
 .btn-ghost:hover {
-  background: #eff6ff;
+  background: rgba(0, 229, 255, 0.1);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+  transform: translateY(-2px);
 }
 
 /* Section */
@@ -151,8 +215,9 @@ a {
 .section-title {
   font-size: 1.4rem;
   margin-bottom: 1.2rem;
-  border-left: 4px solid #2563eb;
   padding-left: 0.6rem;
+  border-left: 4px solid var(--primary-color);
+  color: var(--text-color);
 }
 
 /* 卡片 */
@@ -163,20 +228,27 @@ a {
 }
 
 .card {
-  background: #fff;
-  border: 1px solid #eaeaea;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 1.2rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.15);
+  transform: translateY(-3px);
 }
 
 .card h3 {
   font-size: 1.05rem;
   margin-bottom: 0.5rem;
+  color: var(--primary-color);
 }
 
 .card p {
-  color: #555;
+  color: var(--text-muted);
   font-size: 0.95rem;
 }
 
@@ -185,10 +257,11 @@ a {
   margin-top: 0.6rem;
   margin-right: 0.3rem;
   padding: 0.2rem 0.6rem;
-  background: #eff6ff;
-  color: #2563eb;
+  background: rgba(0, 229, 255, 0.1);
+  color: var(--primary-color);
   border-radius: 999px;
   font-size: 0.8rem;
+  border: 1px solid rgba(0, 229, 255, 0.3);
 }
 
 .contact-card {
@@ -201,7 +274,7 @@ a {
 
 .small {
   font-size: 0.85rem;
-  color: #888;
+  color: var(--text-muted);
   margin-top: 0.6rem;
 }
 
@@ -209,9 +282,9 @@ a {
 .site-footer {
   text-align: center;
   padding: 2rem 1rem;
-  color: #888;
+  color: var(--text-muted);
   font-size: 0.85rem;
-  border-top: 1px solid #eaeaea;
+  border-top: 1px solid var(--border-color);
 }
 
 /* 响应式 */
@@ -227,9 +300,9 @@ a {
     top: 100%;
     left: 0;
     right: 0;
-    background: #fff;
+    background: var(--bg-color);
     padding: 1rem 1.5rem;
-    border-bottom: 1px solid #eaeaea;
+    border-bottom: 1px solid var(--border-color);
     gap: 0.8rem;
   }
 
