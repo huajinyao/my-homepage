@@ -1,4 +1,20 @@
 // ========================================
+// 双校数据（备用）
+// ========================================
+const SCHOOL_DATA = {
+  tju: {
+    name: '天津大学',
+    nameEn: 'Tianjin University',
+    url: 'https://www.tju.edu.cn'
+  },
+  polyu: {
+    name: '香港理工大学',
+    nameEn: 'The Hong Kong Polytechnic University',
+    url: 'https://www.polyu.edu.hk'
+  }
+};
+
+// ========================================
 // 移动端菜单切换
 // ========================================
 const menuToggle = document.getElementById('menuToggle');
@@ -32,6 +48,204 @@ window.addEventListener('scroll', () => {
 document.getElementById('year').textContent = new Date().getFullYear();
 
 // ========================================
+// 打字机效果
+// ========================================
+(function initTyping() {
+  const el = document.getElementById('typingText');
+  if (!el) return;
+
+  const text = '一位热情、勇敢、从容的前行者';
+  let i = 0;
+  const speed = 100;
+
+  function type() {
+    if (i < text.length) {
+      el.textContent += text.charAt(i);
+      i++;
+      setTimeout(type, speed);
+    } else {
+      setTimeout(() => el.classList.remove('typing'), 1500);
+    }
+  }
+
+  setTimeout(type, 500);
+})();
+
+// ========================================
+// 滚动动画（Intersection Observer）
+// ========================================
+(function initReveal() {
+  const elements = document.querySelectorAll('.reveal');
+  if (!elements.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  });
+
+  elements.forEach(el => observer.observe(el));
+})();
+
+// ========================================
+// 双城时钟
+// ========================================
+(function initCityClocks() {
+  const szEl = document.getElementById('szTime');
+  const hkEl = document.getElementById('hkTime');
+  if (!szEl || !hkEl) return;
+
+  function update() {
+    const now = new Date();
+    const time = now.toLocaleTimeString('zh-CN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+    szEl.textContent = time;
+    hkEl.textContent = time;
+  }
+
+  update();
+  setInterval(update, 1000);
+})();
+
+// ========================================
+// 留言平台（localStorage）
+// ========================================
+(function initGuestbook() {
+  const form = document.getElementById('guestbookForm');
+  const list = document.getElementById('guestbookList');
+  const nameInput = document.getElementById('guestName');
+  const messageInput = document.getElementById('guestMessage');
+
+  if (!form || !list) return;
+
+  const STORAGE_KEY = 'huajinyao_guestbook';
+
+  function getMessages() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveMessages(messages) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    } catch (e) {
+      console.warn('无法保存留言：', e);
+    }
+  }
+
+  function formatTime(timestamp) {
+    const d = new Date(timestamp);
+    const pad = n => n.toString().padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  function render() {
+    const messages = getMessages();
+
+    if (messages.length === 0) {
+      list.innerHTML = '<div class="guestbook-empty">还没有留言，来写下第一条吧。</div>';
+      return;
+    }
+
+    const sorted = messages.slice().sort((a, b) => b.time - a.time).slice(0, 20);
+
+    list.innerHTML = sorted.map(m => `
+      <div class="guestbook-item">
+        <div class="guest-name">${escapeHtml(m.name)}</div>
+        <div class="guest-message">${escapeHtml(m.message)}</div>
+        <div class="guest-time">${formatTime(m.time)}</div>
+      </div>
+    `).join('');
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const name = nameInput.value.trim();
+    const message = messageInput.value.trim();
+
+    if (!name || !message) return;
+
+    const messages = getMessages();
+    messages.push({
+      name: name,
+      message: message,
+      time: Date.now()
+    });
+
+    saveMessages(messages);
+    form.reset();
+    render();
+  });
+
+  render();
+})();
+
+// ========================================
+// 返回顶部
+// ========================================
+(function initBackToTop() {
+  const btn = document.getElementById('backToTop');
+  if (!btn) return;
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 400) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  }, { passive: true });
+
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+// ========================================
+// 音乐播放器
+// ========================================
+(function initMusicPlayer() {
+  const toggle = document.getElementById('musicToggle');
+  const audio = document.getElementById('bgMusic');
+  if (!toggle || !audio) return;
+
+  let playing = false;
+
+  toggle.addEventListener('click', () => {
+    if (playing) {
+      audio.pause();
+      toggle.textContent = '▶';
+    } else {
+      audio.play().catch(() => {});
+      toggle.textContent = '❚❚';
+    }
+    playing = !playing;
+  });
+})();
+
+// ========================================
 // Canvas 粒子网络
 // ========================================
 (function initParticleNetwork() {
@@ -40,7 +254,6 @@ document.getElementById('year').textContent = new Date().getFullYear();
 
   const ctx = canvas.getContext('2d');
 
-  // 根据屏幕宽度决定粒子数量
   function getParticleCount() {
     const w = window.innerWidth;
     if (w < 480) return 20;
@@ -49,7 +262,6 @@ document.getElementById('year').textContent = new Date().getFullYear();
     return 100;
   }
 
-  // 根据屏幕宽度决定连线距离
   function getLinkDistance() {
     const w = window.innerWidth;
     if (w < 480) return 80;
@@ -58,7 +270,6 @@ document.getElementById('year').textContent = new Date().getFullYear();
     return 150;
   }
 
-  // 根据屏幕宽度决定帧率
   function getFrameRate() {
     return window.innerWidth < 768 ? 30 : 60;
   }
@@ -72,7 +283,6 @@ document.getElementById('year').textContent = new Date().getFullYear();
   let lastFrameTime = 0;
   let frameInterval = 1000 / getFrameRate();
 
-  // 粒子类
   class Particle {
     constructor() {
       this.x = Math.random() * width;
@@ -98,7 +308,6 @@ document.getElementById('year').textContent = new Date().getFullYear();
     }
   }
 
-  // 初始化粒子
   function initParticles() {
     particles = [];
     const count = getParticleCount();
@@ -107,7 +316,6 @@ document.getElementById('year').textContent = new Date().getFullYear();
     }
   }
 
-  // 调整 Canvas 尺寸
   function resize() {
     const rect = canvas.getBoundingClientRect();
     width = rect.width;
@@ -121,7 +329,6 @@ document.getElementById('year').textContent = new Date().getFullYear();
     initParticles();
   }
 
-  // 绘制连线
   function drawLinks() {
     const linkDistance = getLinkDistance();
     const maxDistSq = linkDistance * linkDistance;
@@ -147,7 +354,6 @@ document.getElementById('year').textContent = new Date().getFullYear();
     }
   }
 
-  // 动画循环
   function animate(currentTime) {
     animationId = requestAnimationFrame(animate);
 
@@ -164,21 +370,18 @@ document.getElementById('year').textContent = new Date().getFullYear();
     drawLinks();
   }
 
-  // 启动
   function start() {
     resize();
     if (animationId) cancelAnimationFrame(animationId);
     animationId = requestAnimationFrame(animate);
   }
 
-  // 窗口大小变化时重新初始化（防抖）
   let resizeTimer = null;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(start, 200);
   }, { passive: true });
 
-  // 页面不可见时暂停动画
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       if (animationId) {
