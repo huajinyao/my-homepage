@@ -5,277 +5,346 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="滑锦尧的个人主页 - 智能医学工程（脑机接口）· 天津大学与香港理工大学双校本科生">
   <title>滑锦尧 | 个人主页</title>
-  <link rel="stylesheet" href="style.css">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@400;500;700&family=Cinzel:wght@500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary-color: #00e5ff;
+      --bg-color: #0a0e14;
+      --text-color: #f0f0f0;
+      --header-height: 64px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+    }
+  </style>
+
+  <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="style.css"></noscript>
 </head>
 <body>
 
-  <!-- 顶部导航 -->
+  <div class="scroll-progress" id="scrollProgress"></div>
+  <div class="cursor-glow" id="cursorGlow"></div>
+
   <header class="site-header">
     <nav class="navbar">
       <a href="#" class="brand">滑锦尧</a>
 
-      <!-- 双城时钟 -->
       <div class="city-clocks">
         <span class="clock-item">
-          <span class="clock-label">深圳</span>
+          <span class="clock-label" data-i18n="clock.sz">深圳</span>
           <span class="clock-time" id="szTime">--:--</span>
         </span>
         <span class="clock-divider">·</span>
         <span class="clock-item">
-          <span class="clock-label">香港</span>
+          <span class="clock-label" data-i18n="clock.hk">香港</span>
           <span class="clock-time" id="hkTime">--:--</span>
         </span>
       </div>
 
-      <button class="menu-toggle" id="menuToggle" aria-label="菜单">☰</button>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="切换主题">🌙</button>
+        <button class="lang-toggle" id="langToggle" aria-label="切换语言">EN</button>
+      </div>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="打开菜单">☰</button>
       <ul class="nav-links" id="navLinks">
-        <li><a href="#identity">身份</a></li>
-        <li><a href="#about">关于我</a></li>
-        <li><a href="#timeline">轨迹</a></li>
-        <li><a href="#projects">项目</a></li>
-        <li><a href="#campus">校园</a></li>
-        <li><a href="#guestbook">留言</a></li>
-        <li><a href="#contact">联系</a></li>
+        <li><a href="#identity" data-i18n="nav.identity">身份</a></li>
+        <li><a href="#about" data-i18n="nav.about">关于我</a></li>
+        <li><a href="#timeline" data-i18n="nav.timeline">轨迹</a></li>
+        <li><a href="#projects" data-i18n="nav.projects">项目</a></li>
+        <li><a href="#campus" data-i18n="nav.campus">校园</a></li>
+        <li><a href="#music" data-i18n="nav.music">音乐</a></li>
+        <li><a href="#twin" data-i18n="nav.twin">对话</a></li>
+        <li><a href="#guestbook" data-i18n="nav.guestbook">留言</a></li>
+        <li><a href="#contact" data-i18n="nav.contact">联系</a></li>
       </ul>
     </nav>
   </header>
 
   <main>
-    <!-- Hero 首屏 -->
     <section class="hero" id="hero">
-      <canvas id="particleCanvas"></canvas>
+      <canvas id="particleCanvas" role="img" aria-label="粒子网络背景"></canvas>
 
       <div class="hero-content">
-        <div class="avatar">滑</div>
-        <h1>你好，我是 <span class="highlight glow">滑锦尧</span></h1>
-        <p class="tagline typing" id="typingText"></p>
-        <p class="sub-tagline">智能医学工程（脑机接口）· 天大-港理工双校本科生 · 深圳/香港</p>
+        <div class="avatar" data-i18n="hero.avatar">滑</div>
+        <h1><span data-i18n="hero.greeting">你好，我是</span> <span class="highlight glow" data-i18n="hero.name">滑锦尧</span></h1>
+        <p class="tagline typing" id="typingText" aria-live="polite"></p>
+        <p class="sub-tagline" data-i18n="hero.sub">智能医学工程（脑机接口）· 天大-港理工双校本科生 · 深圳/香港</p>
         <div class="hero-actions">
-          <a href="#projects" class="btn btn-primary">查看我的项目</a>
-          <a href="#guestbook" class="btn btn-ghost">留言给我</a>
+          <a href="#projects" class="btn btn-primary" data-i18n="hero.btn1">查看我的项目</a>
+          <a href="#guestbook" class="btn btn-ghost" data-i18n="hero.btn2">留言给我</a>
         </div>
       </div>
     </section>
 
-    <!-- 学术身份 -->
     <section class="section dual-identity reveal" id="identity">
-      <h2 class="section-title">学术身份</h2>
+      <h2 class="section-title" data-i18n="identity.title">学术身份</h2>
       <div class="dual-schools">
         <a href="https://www.tju.edu.cn" target="_blank" rel="noopener" class="school-card">
-          <img src="tju-logo.png" alt="天津大学" class="school-logo">
+          <img src="tju-logo.png" alt="天津大学校徽" loading="lazy" width="80" height="80">
           <div class="school-info">
-            <h3>天津大学</h3>
-            <p>双校学籍 · 双校证书</p>
+            <h3 data-i18n="identity.tju">天津大学</h3>
+            <p data-i18n="identity.tjuDesc">双校学籍 · 双校证书</p>
           </div>
         </a>
         <div class="school-connector">×</div>
         <a href="https://www.polyu.edu.hk" target="_blank" rel="noopener" class="school-card">
-          <img src="polyu-logo.png" alt="香港理工大学" class="school-logo">
+          <img src="polyu-logo.png" alt="香港理工大学校徽" loading="lazy" width="80" height="80">
           <div class="school-info">
-            <h3>香港理工大学</h3>
-            <p>QS全球百强 · 约50%课程由PolyU授课</p>
+            <h3 data-i18n="identity.polyu">香港理工大学</h3>
+            <p data-i18n="identity.polyuDesc">QS全球百强 · 约50%课程由PolyU授课</p>
           </div>
         </a>
       </div>
-      <p class="dual-desc">天津大学香港理工大学深圳未来技术学院 · 2026级本科生</p>
+      <p class="dual-desc" data-i18n="identity.desc">天津大学香港理工大学深圳未来技术学院 · 2026级本科生</p>
     </section>
 
-    <!-- 关于我 -->
     <section class="section reveal" id="about">
-      <h2 class="section-title">关于我</h2>
+      <h2 class="section-title" data-i18n="about.title">关于我</h2>
       <div class="card-grid">
         <article class="card">
-          <h3>身份</h3>
-          <p>智能医学工程（脑机接口）专业大一本科生，同时在天津大学和香港理工大学注册学籍。</p>
+          <h3 data-i18n="about.identity.title">身份</h3>
+          <p data-i18n="about.identity.desc">智能医学工程（脑机接口）专业大一本科生，同时在天津大学和香港理工大学注册学籍。</p>
         </article>
         <article class="card">
-          <h3>方向</h3>
-          <p>对脑机接口、人工智能与医学工程的交叉领域感兴趣，希望用技术解决真实世界的健康问题。</p>
+          <h3 data-i18n="about.direction.title">方向</h3>
+          <p data-i18n="about.direction.desc">对脑机接口、人工智能与医学工程的交叉领域感兴趣，希望用技术解决真实世界的健康问题。</p>
         </article>
         <article class="card">
-          <h3>记忆点</h3>
-          <p>学风建设组成员，喜欢在学习和生活中保持热情与从容。</p>
+          <h3 data-i18n="about.memory.title">记忆点</h3>
+          <p data-i18n="about.memory.desc">学风建设组成员，喜欢在学习和生活中保持热情与从容。</p>
         </article>
       </div>
     </section>
 
-    <!-- 成长轨迹 -->
     <section class="section reveal" id="timeline">
-      <h2 class="section-title">成长轨迹</h2>
+      <h2 class="section-title" data-i18n="timeline.title">成长轨迹</h2>
       <div class="timeline">
         <div class="timeline-item">
           <div class="timeline-dot"></div>
-          <div class="timeline-content">
+          <div class="timeline-content" tabindex="0">
             <span class="timeline-date">2026.09</span>
-            <h3>入学天大-港理工深圳未来技术学院</h3>
-            <p>智能医学工程（脑机接口）专业，开始双校学习旅程。</p>
+            <h3 data-i18n="timeline.item1.title">入学天大-港理工深圳未来技术学院</h3>
+            <p data-i18n="timeline.item1.desc">智能医学工程（脑机接口）专业，开始双校学习旅程。</p>
           </div>
         </div>
         <div class="timeline-item">
           <div class="timeline-dot"></div>
-          <div class="timeline-content">
+          <div class="timeline-content" tabindex="0">
             <span class="timeline-date">2026.10</span>
-            <h3>Vibe Coding 课程个人主页项目</h3>
-            <p>从 V1 到 V4，用 AI 辅助开发完成深色科技风个人主页。</p>
+            <h3 data-i18n="timeline.item2.title">Vibe Coding 课程个人主页项目</h3>
+            <p data-i18n="timeline.item2.desc">从 V1 到 V6，用 AI 辅助开发完成深色科技风个人主页。</p>
           </div>
         </div>
         <div class="timeline-item">
           <div class="timeline-dot"></div>
-          <div class="timeline-content">
-            <span class="timeline-date">进行中</span>
-            <h3>数学建模课题</h3>
-            <p>《基于实际场景需求的个性化背景音乐歌单推荐模型的研究》。</p>
+          <div class="timeline-content" tabindex="0">
+            <span class="timeline-date" data-i18n="timeline.item3.date">进行中</span>
+            <h3 data-i18n="timeline.item3.title">数学建模课题</h3>
+            <p data-i18n="timeline.item3.desc">《基于实际场景需求的个性化背景音乐歌单推荐模型的研究》。</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 兴趣与技能 -->
     <section class="section reveal" id="interests">
-      <h2 class="section-title">兴趣与技能</h2>
+      <h2 class="section-title" data-i18n="interests.title">兴趣与技能</h2>
       <div class="card-grid">
         <article class="card">
-          <h3>艺术</h3>
-          <p>软笔书法、钢琴、二胡、架子鼓，喜欢用不同方式表达自己。</p>
-          <span class="chip">书法</span>
-          <span class="chip">钢琴</span>
-          <span class="chip">二胡</span>
-          <span class="chip">架子鼓</span>
+          <h3 data-i18n="interests.art.title">艺术</h3>
+          <p data-i18n="interests.art.desc">软笔书法、钢琴、二胡、架子鼓。</p>
+          <div class="skill-bar" data-skill="书法" data-level="85"></div>
+          <div class="skill-bar" data-skill="钢琴" data-level="75"></div>
+          <div class="skill-bar" data-skill="二胡" data-level="70"></div>
+          <div class="skill-bar" data-skill="架子鼓" data-level="65"></div>
         </article>
         <article class="card">
-          <h3>运动</h3>
-          <p>喜爱跑步，享受在运动中保持节奏与耐力。</p>
-          <span class="chip">跑步</span>
+          <h3 data-i18n="interests.sport.title">运动</h3>
+          <p data-i18n="interests.sport.desc">喜爱跑步，享受在运动中保持节奏与耐力。</p>
+          <div class="skill-bar" data-skill="跑步" data-level="80"></div>
         </article>
         <article class="card">
-          <h3>其他</h3>
-          <p>热爱音乐与舞蹈艺术，也喜欢探索技术与艺术的结合。</p>
-          <span class="chip">音乐</span>
-          <span class="chip">舞蹈</span>
+          <h3 data-i18n="interests.other.title">其他</h3>
+          <p data-i18n="interests.other.desc">热爱音乐与舞蹈艺术。</p>
+          <div class="skill-bar" data-skill="音乐" data-level="85"></div>
+          <div class="skill-bar" data-skill="舞蹈" data-level="60"></div>
         </article>
       </div>
     </section>
 
-    <!-- 项目作品 -->
+    <section class="section reveal" id="radar">
+      <h2 class="section-title" data-i18n="radar.title">技能分布</h2>
+      <div class="radar-wrap">
+        <canvas id="skillRadar" width="400" height="400" role="img" aria-label="技能雷达图"></canvas>
+      </div>
+    </section>
+
     <section class="section reveal" id="projects">
-      <h2 class="section-title">项目与作品</h2>
+      <h2 class="section-title" data-i18n="projects.title">项目与作品</h2>
       <div class="card-grid">
-        <article class="card project-card">
-          <h3>数学建模课题</h3>
-          <p>《基于实际场景需求的个性化背景音乐歌单推荐模型的研究》</p>
-          <span class="chip">数学建模</span>
-          <span class="chip">推荐模型</span>
-        </article>
-        <article class="card project-card">
-          <h3>个人主页 V4</h3>
-          <p>用 Vibe Coding 方式构建的个人主页，深色科技风 + 双校身份 + 生态扩展。</p>
+        <a href="project-math.html" class="card project-card">
+          <h3 data-i18n="projects.p1.title">数学建模课题</h3>
+          <p data-i18n="projects.p1.desc">《基于实际场景需求的个性化背景音乐歌单推荐模型的研究》</p>
+          <span class="chip" data-i18n="projects.p1.chip1">数学建模</span>
+          <span class="chip" data-i18n="projects.p1.chip2">推荐模型</span>
+        </a>
+        <a href="project-homepage.html" class="card project-card">
+          <h3 data-i18n="projects.p2.title">个人主页 V6</h3>
+          <p data-i18n="projects.p2.desc">深色科技风 + 双校身份 + Digital Twin。</p>
           <span class="chip">HTML/CSS/JS</span>
-        </article>
+        </a>
       </div>
     </section>
 
-    <!-- 校园资源 -->
     <section class="section reveal" id="campus">
-      <h2 class="section-title">校园资源</h2>
+      <h2 class="section-title" data-i18n="campus.title">校园资源</h2>
       <div class="campus-grid">
         <a href="https://www.tju.edu.cn" target="_blank" rel="noopener" class="campus-card">
           <span class="campus-icon">T</span>
-          <h3>天津大学官网</h3>
-          <p>母校主页</p>
+          <h3 data-i18n="campus.tju.title">天津大学官网</h3>
+          <p data-i18n="campus.tju.desc">母校主页</p>
         </a>
         <a href="https://www.tju.edu.cn/info/1046/1302.htm" target="_blank" rel="noopener" class="campus-card">
           <span class="campus-icon">📚</span>
-          <h3>天大图书馆</h3>
-          <p>文献资源</p>
+          <h3 data-i18n="campus.tjuLib.title">天大图书馆</h3>
+          <p data-i18n="campus.tjuLib.desc">文献资源</p>
         </a>
         <a href="http://oaa.tju.edu.cn" target="_blank" rel="noopener" class="campus-card">
           <span class="campus-icon">📋</span>
-          <h3>天大教务处</h3>
-          <p>选课 · 成绩</p>
+          <h3 data-i18n="campus.tjuOaa.title">天大教务处</h3>
+          <p data-i18n="campus.tjuOaa.desc">选课 · 成绩</p>
         </a>
         <a href="https://sz.tju.edu.cn" target="_blank" rel="noopener" class="campus-card">
           <span class="campus-icon">🏛</span>
-          <h3>深圳未来技术学院</h3>
-          <p>所在学院</p>
+          <h3 data-i18n="campus.sz.title">深圳未来技术学院</h3>
+          <p data-i18n="campus.sz.desc">所在学院</p>
         </a>
         <a href="https://www.polyu.edu.hk" target="_blank" rel="noopener" class="campus-card">
           <span class="campus-icon">P</span>
-          <h3>港理工官网</h3>
-          <p>母校主页</p>
+          <h3 data-i18n="campus.polyu.title">港理工官网</h3>
+          <p data-i18n="campus.polyu.desc">母校主页</p>
         </a>
         <a href="https://www.lib.polyu.edu.hk" target="_blank" rel="noopener" class="campus-card">
           <span class="campus-icon">📖</span>
-          <h3>港理工图书馆</h3>
-          <p>Pao Yue-kong Library</p>
+          <h3 data-i18n="campus.polyuLib.title">港理工图书馆</h3>
+          <p data-i18n="campus.polyuLib.desc">Pao Yue-kong Library</p>
         </a>
         <a href="https://learn.polyu.edu.hk" target="_blank" rel="noopener" class="campus-card">
           <span class="campus-icon">💻</span>
-          <h3>Learn@PolyU</h3>
-          <p>课程学习平台</p>
+          <h3 data-i18n="campus.learn.title">Learn@PolyU</h3>
+          <p data-i18n="campus.learn.desc">课程学习平台</p>
         </a>
         <a href="https://www38.polyu.edu.hk/eStudent/" target="_blank" rel="noopener" class="campus-card">
           <span class="campus-icon">🎓</span>
-          <h3>PolyU eStudent</h3>
-          <p>学生信息系统</p>
+          <h3 data-i18n="campus.eStudent.title">PolyU eStudent</h3>
+          <p data-i18n="campus.eStudent.desc">学生信息系统</p>
         </a>
       </div>
     </section>
 
-    <!-- 留言平台 -->
-    <section class="section reveal" id="guestbook">
-      <h2 class="section-title">留言给我</h2>
-      <p class="section-desc">欢迎留下你的想法、建议或鼓励。你的留言会保存在本地浏览器中，并展示在下方。</p>
-
-      <form class="guestbook-form" id="guestbookForm">
-        <input type="text" id="guestName" placeholder="你的名字" maxlength="20" required>
-        <textarea id="guestMessage" placeholder="写下你的留言..." maxlength="200" required></textarea>
-        <button type="submit" class="btn btn-primary">提交留言</button>
-      </form>
-
-      <div class="guestbook-list" id="guestbookList">
-        <!-- 留言动态渲染 -->
+    <section class="section reveal" id="notes">
+      <h2 class="section-title" data-i18n="notes.title">学习笔记</h2>
+      <div class="card-grid">
+        <a href="notes/2026-09-01-vibe-coding.html" class="card">
+          <h3>Vibe Coding 入门</h3>
+          <p>2026-09-01 · 学习笔记</p>
+        </a>
+        <a href="notes/2026-09-15-brain-computer-interface.html" class="card">
+          <h3>脑机接口基础</h3>
+          <p>2026-09-15 · 学习笔记</p>
+        </a>
       </div>
     </section>
 
-    <!-- 联系我 -->
+    <section class="section reveal" id="music">
+      <h2 class="section-title" data-i18n="music.title">我喜欢的音乐</h2>
+      <p class="section-desc" data-i18n="music.desc">共 20 首，点击卡片切换播放，可横向滑动浏览。</p>
+
+      <canvas id="audioVisualizer" class="audio-visualizer" aria-label="音频频谱可视化"></canvas>
+
+      <div class="music-shelf" id="musicShelf"></div>
+    </section>
+
+    <section class="section reveal" id="twin">
+      <h2 class="section-title" data-i18n="twin.title">和我聊聊</h2>
+      <p class="section-desc" data-i18n="twin.desc">这是基于我的个人知识库的对话入口，你可以问我关于我的专业、项目、兴趣等问题。</p>
+
+      <div class="twin-container">
+        <div class="twin-messages" id="twinMessages" aria-live="polite">
+          <div class="twin-bubble twin-bot" data-i18n="twin.intro">
+            你好，我是滑锦尧的数字分身。你可以问我：<br>· 你的专业是什么？<br>· 你在做什么项目？<br>· 你的兴趣爱好有哪些？<br>· 怎么联系你？
+          </div>
+        </div>
+
+        <div class="twin-suggestions" id="twinSuggestions">
+          <button class="twin-chip" data-q="你的专业是什么" data-i18n="twin.chip1">你的专业是什么？</button>
+          <button class="twin-chip" data-q="你在做什么项目" data-i18n="twin.chip2">你在做什么项目？</button>
+          <button class="twin-chip" data-q="你的兴趣爱好" data-i18n="twin.chip3">你的兴趣爱好？</button>
+          <button class="twin-chip" data-q="怎么联系你" data-i18n="twin.chip4">怎么联系你？</button>
+        </div>
+
+        <form class="twin-input" id="twinForm">
+          <input type="text" id="twinInput" placeholder="输入你的问题..." autocomplete="off">
+          <button type="submit" class="btn btn-primary" data-i18n="twin.send">发送</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="section reveal" id="guestbook">
+      <h2 class="section-title" data-i18n="guestbook.title">留言给我</h2>
+      <p class="section-desc" data-i18n="guestbook.desc">欢迎留下你的想法、建议或鼓励。你的留言会保存在本地浏览器中，并展示在下方。</p>
+
+      <form class="guestbook-form" id="guestbookForm">
+        <input type="text" id="guestName" placeholder="你的名字" maxlength="20" required aria-label="你的名字">
+        <textarea id="guestMessage" placeholder="写下你的留言..." maxlength="200" required aria-label="留言内容"></textarea>
+        <button type="submit" class="btn btn-primary" data-i18n="guestbook.submit">提交留言</button>
+      </form>
+
+      <div class="guestbook-list" id="guestbookList"></div>
+    </section>
+
     <section class="section reveal" id="contact">
-      <h2 class="section-title">联系我</h2>
+      <h2 class="section-title" data-i18n="contact.title">联系我</h2>
       <div class="card contact-card">
-        <p>如果你对我的项目感兴趣，或者想交流学习心得，欢迎联系我。</p>
+        <p data-i18n="contact.desc">如果你对我的项目感兴趣，或者想交流学习心得，欢迎联系我。</p>
         <p>
-          <a href="mailto:2761163826@qq.com" class="btn btn-primary">发送邮件</a>
+          <a href="mailto:2761163826@qq.com" class="btn btn-primary" data-i18n="contact.email">发送邮件</a>
           <a href="https://github.com/huajinyao" class="btn btn-ghost" target="_blank" rel="noopener">GitHub</a>
         </p>
-        <p class="small">邮箱：2761163826@qq.com</p>
-        <p class="small">GitHub：github.com/huajinyao</p>
+        <p class="small">Email: 2761163826@qq.com</p>
+        <p class="small">GitHub: github.com/huajinyao</p>
       </div>
     </section>
   </main>
 
-  <!-- 页脚 -->
   <footer class="site-footer">
-    <p>© <span id="year"></span> 滑锦尧. Built with Vibe Coding.</p>
+    <p>© <span id="year"></span> <span data-i18n="footer.name">滑锦尧</span>. <span data-i18n="footer.built">Built with Vibe Coding.</span></p>
     <p class="visitor-count">
-      本站访问量：<span id="busuanzi_value_site_pv">--</span> 次
+      <span data-i18n="footer.visits">本站访问量：</span><span id="busuanzi_value_site_pv">--</span>
     </p>
   </footer>
 
-  <!-- 返回顶部 -->
   <button class="back-to-top" id="backToTop" aria-label="返回顶部">↑</button>
 
-  <!-- 音乐播放器 -->
   <div class="music-player" id="musicPlayer">
     <button class="music-toggle" id="musicToggle" aria-label="播放/暂停">▶</button>
-    <span class="music-label">背景音乐</span>
-    <audio id="bgMusic" loop>
-      <source src="bgm.mp3" type="audio/mpeg">
-    </audio>
+    <div class="music-now">
+      <span class="music-now-label" data-i18n="player.now">正在播放</span>
+      <span class="music-now-title" id="musicNowTitle" data-i18n="player.none">未选择</span>
+    </div>
   </div>
 
-  <!-- 脚本 -->
-  <script src="script.js"></script>
+  <audio id="bgMusic" preload="none"></audio>
+
+  <script src="script.js" defer></script>
   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </body>
 </html>
