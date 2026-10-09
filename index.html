@@ -141,7 +141,7 @@
           <div class="timeline-content" tabindex="0">
             <span class="timeline-date">2026.10</span>
             <h3 data-i18n="timeline.item2.title">Vibe Coding 课程个人主页项目</h3>
-            <p data-i18n="timeline.item2.desc">从 V1 到 V3，用 AI 辅助开发完成深色科技风个人主页。</p>
+            <p data-i18n="timeline.item2.desc">从 V1 到 V4，用 AI 辅助开发完成深色科技风个人主页。</p>
           </div>
         </div>
         <div class="timeline-item">
@@ -190,17 +190,27 @@
     <section class="section reveal" id="projects">
       <h2 class="section-title" data-i18n="projects.title">项目与作品</h2>
       <div class="card-grid">
-        <a href="project-math.html" class="card project-card">
+        <article class="card project-card">
           <h3 data-i18n="projects.p1.title">数学建模课题</h3>
           <p data-i18n="projects.p1.desc">《基于实际场景需求的个性化背景音乐歌单推荐模型的研究》</p>
+          <ul class="project-detail">
+            <li data-i18n="projects.p1.role"><strong>我的角色：</strong>负责用户画像建模 + 推荐算法设计</li>
+            <li data-i18n="projects.p1.method"><strong>方法：</strong>协同过滤 + 情感分析 + 场景匹配</li>
+            <li data-i18n="projects.p1.hard"><strong>难点：</strong>冷启动问题、场景标签稀疏</li>
+          </ul>
           <span class="chip" data-i18n="projects.p1.chip1">数学建模</span>
           <span class="chip" data-i18n="projects.p1.chip2">推荐模型</span>
-        </a>
-        <a href="project-homepage.html" class="card project-card">
-          <h3 data-i18n="projects.p2.title">个人主页 V3</h3>
+        </article>
+        <article class="card project-card">
+          <h3 data-i18n="projects.p2.title">个人主页 V4</h3>
           <p data-i18n="projects.p2.desc">深色科技风 + 双校身份 + Digital Twin。</p>
+          <ul class="project-detail">
+            <li data-i18n="projects.p2.role"><strong>我的角色：</strong>独立完成从 V1 到 V4 的全部迭代</li>
+            <li data-i18n="projects.p2.stack"><strong>技术栈：</strong>HTML/CSS/原生 JS + Canvas + Web Audio API</li>
+            <li data-i18n="projects.p2.deploy"><strong>发布：</strong>GitHub Pages 静态托管</li>
+          </ul>
           <span class="chip">HTML/CSS/JS</span>
-        </a>
+        </article>
       </div>
     </section>
 
@@ -217,7 +227,7 @@
           <h3 data-i18n="campus.tjuLib.title">天大图书馆</h3>
           <p data-i18n="campus.tjuLib.desc">文献资源</p>
         </a>
-        <a href="http://oaa.tju.edu.cn" target="_blank" rel="noopener" class="campus-card">
+        <a href="https://oaa.tju.edu.cn" target="_blank" rel="noopener" class="campus-card">
           <span class="campus-icon">📋</span>
           <h3 data-i18n="campus.tjuOaa.title">天大教务处</h3>
           <p data-i18n="campus.tjuOaa.desc">选课 · 成绩</p>
@@ -325,55 +335,6 @@
     </section>
   </main>
 
-  <!-- 反馈按钮 -->
-  <button class="feedback-btn" id="feedbackBtn" type="button">💬 反馈</button>
-
-  <!-- 反馈弹窗 -->
-  <div class="feedback-modal" id="feedbackModal">
-    <div class="feedback-panel">
-      <button class="feedback-close" id="feedbackClose" type="button">✕</button>
-      <h3 data-i18n="feedback.title">留言反馈</h3>
-      <p class="feedback-hint" data-i18n="feedback.hint">反馈不会公开，只有我能看到。请告诉我你在哪里遇到了问题。</p>
-
-      <form class="feedback-form" id="feedbackForm">
-        <label>
-          <span data-i18n="feedback.name">昵称（可选）</span>
-          <input type="text" id="fbName" maxlength="30" placeholder="你的昵称">
-        </label>
-
-        <label>
-          <span data-i18n="feedback.relation">与我的关系</span>
-          <select id="fbRelation">
-            <option value="同学">同学</option>
-            <option value="老师">老师</option>
-            <option value="家人">家人</option>
-            <option value="朋友">朋友</option>
-            <option value="其他">其他</option>
-            <option value="不便透露">不便透露</option>
-          </select>
-        </label>
-
-        <label>
-          <span data-i18n="feedback.device">反馈针对的设备</span>
-          <select id="fbDevice">
-            <option value="电脑">电脑</option>
-            <option value="手机">手机</option>
-            <option value="平板">平板</option>
-            <option value="其他">其他</option>
-          </select>
-        </label>
-
-        <label>
-          <span data-i18n="feedback.message">反馈内容</span>
-          <textarea id="fbMessage" maxlength="500" required placeholder="请描述具体位置、体验和问题"></textarea>
-        </label>
-
-        <button type="submit" class="btn btn-primary" id="fbSubmit" data-i18n="feedback.submit">提交反馈</button>
-        <p class="feedback-status" id="fbStatus"></p>
-      </form>
-    </div>
-  </div>
-
   <footer class="site-footer">
     <p>© <span id="year"></span> <span data-i18n="footer.name">滑锦尧</span>. <span data-i18n="footer.built">Built with Vibe Coding.</span></p>
     <p class="visitor-count">
@@ -394,7 +355,6 @@
   <audio id="bgMusic" preload="none"></audio>
 
   <script src="script.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </body>
 </html>

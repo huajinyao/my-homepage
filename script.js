@@ -424,7 +424,7 @@ safeRun('musicCard', function () {
 });
 
 // ========================================
-// Canvas 粒子网络
+// Canvas 粒子网络（V4：粒子数量减半，优化加载）
 // ========================================
 safeRun('particles', function () {
   const canvas = document.getElementById('particleCanvas');
@@ -436,10 +436,10 @@ safeRun('particles', function () {
 
   function getParticleCount() {
     const w = window.innerWidth;
-    if (w < 480) return 40;
-    if (w < 768) return 70;
-    if (w < 1024) return 100;
-    return 130;
+    if (w < 480) return 20;
+    if (w < 768) return 35;
+    if (w < 1024) return 50;
+    return 65;
   }
 
   function getLinkDistance() {
@@ -723,7 +723,7 @@ safeRun('lang', function () {
       'about.memory.title': '记忆点', 'about.memory.desc': '学风建设组成员，喜欢在学习和生活中保持热情与从容。',
       'timeline.title': '成长轨迹',
       'timeline.item1.title': '入学天大-港理工深圳未来技术学院', 'timeline.item1.desc': '智能医学工程（脑机接口）专业，开始双校学习旅程。',
-      'timeline.item2.title': 'Vibe Coding 课程个人主页项目', 'timeline.item2.desc': '从 V1 到 V3，用 AI 辅助开发完成深色科技风个人主页。',
+      'timeline.item2.title': 'Vibe Coding 课程个人主页项目', 'timeline.item2.desc': '从 V1 到 V4，用 AI 辅助开发完成深色科技风个人主页。',
       'timeline.item3.date': '进行中', 'timeline.item3.title': '数学建模课题', 'timeline.item3.desc': '《基于实际场景需求的个性化背景音乐歌单推荐模型的研究》。',
       'interests.title': '兴趣与技能',
       'interests.art.title': '艺术', 'interests.art.desc': '软笔书法、钢琴、二胡、架子鼓。',
@@ -732,8 +732,14 @@ safeRun('lang', function () {
       'radar.title': '技能分布',
       'projects.title': '项目与作品',
       'projects.p1.title': '数学建模课题', 'projects.p1.desc': '《基于实际场景需求的个性化背景音乐歌单推荐模型的研究》',
+      'projects.p1.role': '我的角色：负责用户画像建模 + 推荐算法设计',
+      'projects.p1.method': '方法：协同过滤 + 情感分析 + 场景匹配',
+      'projects.p1.hard': '难点：冷启动问题、场景标签稀疏',
       'projects.p1.chip1': '数学建模', 'projects.p1.chip2': '推荐模型',
-      'projects.p2.title': '个人主页 V3', 'projects.p2.desc': '深色科技风 + 双校身份 + Digital Twin。',
+      'projects.p2.title': '个人主页 V4', 'projects.p2.desc': '深色科技风 + 双校身份 + Digital Twin。',
+      'projects.p2.role': '我的角色：独立完成从 V1 到 V4 的全部迭代',
+      'projects.p2.stack': '技术栈：HTML/CSS/原生 JS + Canvas + Web Audio API',
+      'projects.p2.deploy': '发布：GitHub Pages 静态托管',
       'campus.title': '校园资源',
       'campus.tju.title': '天津大学官网', 'campus.tju.desc': '母校主页',
       'campus.tjuLib.title': '天大图书馆', 'campus.tjuLib.desc': '文献资源',
@@ -758,14 +764,7 @@ safeRun('lang', function () {
       'contact.title': '联系我',
       'contact.desc': '如果你对我的项目感兴趣，或者想交流学习心得，欢迎联系我。',
       'contact.email': '发送邮件',
-      'footer.name': '滑锦尧', 'footer.built': 'Built with Vibe Coding.', 'footer.visits': '本站访问量：',
-      'feedback.title': '留言反馈',
-      'feedback.hint': '反馈不会公开，只有我能看到。请告诉我你在哪里遇到了问题。',
-      'feedback.name': '昵称（可选）',
-      'feedback.relation': '与我的关系',
-      'feedback.device': '反馈针对的设备',
-      'feedback.message': '反馈内容',
-      'feedback.submit': '提交反馈'
+      'footer.name': '滑锦尧', 'footer.built': 'Built with Vibe Coding.', 'footer.visits': '本站访问量：'
     },
     en: {
       'nav.identity': 'Identity', 'nav.about': 'About', 'nav.timeline': 'Timeline',
@@ -787,7 +786,7 @@ safeRun('lang', function () {
       'about.memory.title': 'Memory Point', 'about.memory.desc': 'Member of the Study Style Committee, passionate and composed in study and life.',
       'timeline.title': 'Growth Timeline',
       'timeline.item1.title': 'Enrolled at TJU-PolyU Shenzhen Future Technology Institute', 'timeline.item1.desc': 'Intelligent Medical Engineering (BCI), starting the dual-degree journey.',
-      'timeline.item2.title': 'Vibe Coding Course Personal Homepage Project', 'timeline.item2.desc': 'From V1 to V3, building a dark tech-style personal homepage with AI.',
+      'timeline.item2.title': 'Vibe Coding Course Personal Homepage Project', 'timeline.item2.desc': 'From V1 to V4, building a dark tech-style personal homepage with AI.',
       'timeline.item3.date': 'In Progress', 'timeline.item3.title': 'Mathematical Modeling Project', 'timeline.item3.desc': '"Research on Personalized Background Music Playlist Recommendation Model Based on Real-world Needs".',
       'interests.title': 'Interests & Skills',
       'interests.art.title': 'Arts', 'interests.art.desc': 'Chinese calligraphy, piano, erhu, drums.',
@@ -796,8 +795,14 @@ safeRun('lang', function () {
       'radar.title': 'Skill Distribution',
       'projects.title': 'Projects & Works',
       'projects.p1.title': 'Mathematical Modeling Project', 'projects.p1.desc': '"Research on Personalized Background Music Playlist Recommendation Model Based on Real-world Needs"',
+      'projects.p1.role': 'My role: user profiling + recommendation algorithm design',
+      'projects.p1.method': 'Method: collaborative filtering + sentiment analysis + scenario matching',
+      'projects.p1.hard': 'Challenges: cold start, sparse scenario tags',
       'projects.p1.chip1': 'Modeling', 'projects.p1.chip2': 'Recommendation',
-      'projects.p2.title': 'Personal Homepage V3', 'projects.p2.desc': 'Dark tech style + dual identity + Digital Twin.',
+      'projects.p2.title': 'Personal Homepage V4', 'projects.p2.desc': 'Dark tech style + dual identity + Digital Twin.',
+      'projects.p2.role': 'My role: independently led V1 → V4 iteration',
+      'projects.p2.stack': 'Stack: HTML/CSS/vanilla JS + Canvas + Web Audio API',
+      'projects.p2.deploy': 'Deploy: GitHub Pages static hosting',
       'campus.title': 'Campus Resources',
       'campus.tju.title': 'Tianjin University', 'campus.tju.desc': 'Official Website',
       'campus.tjuLib.title': 'TJU Library', 'campus.tjuLib.desc': 'Resources',
@@ -822,14 +827,7 @@ safeRun('lang', function () {
       'contact.title': 'Contact Me',
       'contact.desc': "If you're interested in my projects or want to share ideas, feel free to reach out.",
       'contact.email': 'Send Email',
-      'footer.name': 'Hua Jinyao', 'footer.built': 'Built with Vibe Coding.', 'footer.visits': 'Visits: ',
-      'feedback.title': 'Feedback',
-      'feedback.hint': 'Your feedback is private and only visible to me. Please tell me where you had trouble.',
-      'feedback.name': 'Nickname (optional)',
-      'feedback.relation': 'Relation to me',
-      'feedback.device': 'Device you used',
-      'feedback.message': 'Your feedback',
-      'feedback.submit': 'Submit'
+      'footer.name': 'Hua Jinyao', 'footer.built': 'Built with Vibe Coding.', 'footer.visits': 'Visits: '
     }
   };
 
@@ -846,23 +844,17 @@ safeRun('lang', function () {
     const guestNameInput = document.getElementById('guestName');
     const guestMsgInput = document.getElementById('guestMessage');
     const twinInput = document.getElementById('twinInput');
-    const fbName = document.getElementById('fbName');
-    const fbMessage = document.getElementById('fbMessage');
 
     if (lang === 'zh') {
       if (guestNameInput) guestNameInput.placeholder = '你的名字';
       if (guestMsgInput) guestMsgInput.placeholder = '写下你的留言...';
       if (twinInput) twinInput.placeholder = '输入你的问题...';
-      if (fbName) fbName.placeholder = '你的昵称';
-      if (fbMessage) fbMessage.placeholder = '请描述具体位置、体验和问题';
       btn.textContent = 'EN';
       document.documentElement.lang = 'zh-CN';
     } else {
       if (guestNameInput) guestNameInput.placeholder = 'Your name';
       if (guestMsgInput) guestMsgInput.placeholder = 'Write your message...';
       if (twinInput) twinInput.placeholder = 'Type your question...';
-      if (fbName) fbName.placeholder = 'Your nickname';
-      if (fbMessage) fbMessage.placeholder = 'Please describe the location, experience and problem';
       btn.textContent = '中';
       document.documentElement.lang = 'en';
     }
@@ -894,11 +886,11 @@ safeRun('twin', function () {
 
   const KNOWLEDGE = [
     { keywords: ['专业', '学什么', 'major', 'study'], answer: '我是智能医学工程（脑机接口）专业的大一本科生，同时在天津大学和香港理工大学注册学籍。这个专业结合了医学、工程和人工智能，主要研究脑机接口、神经工程和智能医疗设备。' },
-    { keywords: ['项目', '在做什么', 'project', '课题'], answer: '我目前在做两个项目：一是数学建模课题《基于实际场景需求的个性化背景音乐歌单推荐模型的研究》；二是这个个人主页本身，用 Vibe Coding 方式从 V1 迭代到 V3。' },
+    { keywords: ['项目', '在做什么', 'project', '课题'], answer: '我目前在做两个项目：一是数学建模课题《基于实际场景需求的个性化背景音乐歌单推荐模型的研究》；二是这个个人主页本身，用 Vibe Coding 方式从 V1 迭代到 V4。' },
     { keywords: ['兴趣', '爱好', 'hobby', '喜欢'], answer: '我喜欢软笔书法、钢琴、二胡、架子鼓，也喜欢跑步、音乐和舞蹈艺术。' },
     { keywords: ['联系', '邮箱', 'email', 'contact', 'github'], answer: '你可以通过以下方式联系我：\n· 邮箱：2761163826@qq.com\n· GitHub：github.com/huajinyao' },
     { keywords: ['学校', '大学', '天大', '港理工', 'polyu', 'tju'], answer: '我就读于天津大学香港理工大学深圳未来技术学院，同时注册天大和港理工双校学籍。约50%课程由港理工授课。' },
-    { keywords: ['主页', '这个网站', 'website'], answer: '这个个人主页是我在 Vibe Coding 课程中从 V1 迭代到 V3 完成的，包含双校身份、粒子网络、音乐篮筐、Digital Twin、中英切换、主题切换、反馈后台等功能。' },
+    { keywords: ['主页', '这个网站', 'website'], answer: '这个个人主页是我在 Vibe Coding 课程中从 V1 迭代到 V4 完成的，包含双校身份、粒子网络、音乐篮筐、Digital Twin、中英切换、主题切换等功能。' },
     { keywords: ['音乐', '歌', 'music', 'song'], answer: '我在主页「我喜欢的音乐」区域放了 20 首喜欢的歌曲，包括 Five hundred miles、Fly me to the moon、月亮代表我的心、稻香等。' },
     { keywords: ['你好', 'hi', 'hello', '嗨'], answer: '你好！我是滑锦尧的数字分身。你可以问我关于我的专业、项目、兴趣、学校、联系方式等问题。' },
     { keywords: ['谢谢', 'thanks'], answer: '不客气！如果还有其他问题，随时问我。' }
@@ -1065,87 +1057,6 @@ safeRun('radar', function () {
 
   const themeObserver = new MutationObserver(draw);
   themeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-});
-
-// ========================================
-// 反馈后台（Supabase）
-// ========================================
-safeRun('feedback', function () {
-  // ⚠️ 把下面两个值替换成你自己的
-  const SUPABASE_URL = 'https://kreadpajypvspodsjjdc.supabase.co';
-  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_BGloJ8t3BS-rHXwso1T1dA__ScAAXtr';
-
-  const btn = document.getElementById('feedbackBtn');
-  const modal = document.getElementById('feedbackModal');
-  const closeBtn = document.getElementById('feedbackClose');
-  const form = document.getElementById('feedbackForm');
-  const statusEl = document.getElementById('fbStatus');
-  const submitBtn = document.getElementById('fbSubmit');
-
-  if (!btn || !modal || !form) return;
-
-  btn.addEventListener('click', () => modal.classList.add('open'));
-  closeBtn.addEventListener('click', () => modal.classList.remove('open'));
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) modal.classList.remove('open');
-  });
-
-  let client = null;
-  if (window.supabase && SUPABASE_PUBLISHABLE_KEY.indexOf('sb_publishable_BGloJ8t3BS-rHXwso1T1dA__ScAAXtr') === -1) {
-    client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-  }
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    if (!client) {
-      statusEl.textContent = '反馈功能尚未配置，请联系主页主人。';
-      statusEl.className = 'feedback-status error';
-      return;
-    }
-
-    const name = document.getElementById('fbName').value.trim();
-    const relation = document.getElementById('fbRelation').value;
-    const device = document.getElementById('fbDevice').value;
-    const message = document.getElementById('fbMessage').value.trim();
-
-    if (!message) {
-      statusEl.textContent = '请填写反馈内容。';
-      statusEl.className = 'feedback-status error';
-      return;
-    }
-
-    submitBtn.disabled = true;
-    statusEl.textContent = '提交中…';
-    statusEl.className = 'feedback-status';
-
-    try {
-      const { error } = await client.from('feedback').insert({
-        name: name || null,
-        relation,
-        device,
-        message,
-        version: 'V3'
-      });
-
-      if (error) throw error;
-
-      statusEl.textContent = '提交成功，感谢你的反馈！';
-      statusEl.className = 'feedback-status success';
-      form.reset();
-
-      setTimeout(() => {
-        modal.classList.remove('open');
-        statusEl.textContent = '';
-      }, 3000);
-    } catch (err) {
-      console.error('反馈提交失败：', err);
-      statusEl.textContent = '提交失败，请稍后重试。你的内容已保留。';
-      statusEl.className = 'feedback-status error';
-    } finally {
-      submitBtn.disabled = false;
-    }
-  });
 });
 
 // ========================================
