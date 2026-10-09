@@ -1,4 +1,15 @@
 // ========================================
+// 全局错误兜底
+// ========================================
+function safeRun(name, fn) {
+  try {
+    fn();
+  } catch (err) {
+    console.warn('[模块出错] ' + name + ':', err);
+  }
+}
+
+// ========================================
 // 双校数据
 // ========================================
 const SCHOOL_DATA = {
@@ -9,95 +20,99 @@ const SCHOOL_DATA = {
 // ========================================
 // 移动端菜单
 // ========================================
-const menuToggle = document.getElementById('menuToggle');
-const navLinks = document.getElementById('navLinks');
-const siteHeader = document.querySelector('.site-header');
+safeRun('menu', function () {
+  const menuToggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+  const siteHeader = document.querySelector('.site-header');
+  if (!menuToggle || !navLinks) return;
 
-menuToggle.addEventListener('click', () => {
-  navLinks.classList.toggle('open');
+  menuToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+  });
+
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => navLinks.classList.remove('open'));
+  });
+
+  window.addEventListener('scroll', () => {
+    if (!siteHeader) return;
+    if (window.scrollY > 50) siteHeader.classList.add('scrolled');
+    else siteHeader.classList.remove('scrolled');
+  }, { passive: true });
 });
-
-navLinks.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => navLinks.classList.remove('open'));
-});
-
-// ========================================
-// 滚动加深
-// ========================================
-window.addEventListener('scroll', () => {
-  if (window.scrollY > 50) siteHeader.classList.add('scrolled');
-  else siteHeader.classList.remove('scrolled');
-}, { passive: true });
 
 // ========================================
 // 页脚年份
 // ========================================
-document.getElementById('year').textContent = new Date().getFullYear();
+safeRun('year', function () {
+  const el = document.getElementById('year');
+  if (el) el.textContent = new Date().getFullYear();
+});
 
 // ========================================
-// 打字机（多句循环 + 防交叉）
+// 打字机
 // ========================================
-let typingTaskId = 0;
+safeRun('typing', function () {
+  let typingTaskId = 0;
 
-function runTyping() {
-  const el = document.getElementById('typingText');
-  if (!el) return;
+  function runTyping() {
+    const el = document.getElementById('typingText');
+    if (!el) return;
 
-  typingTaskId++;
-  const myTaskId = typingTaskId;
+    typingTaskId++;
+    const myTaskId = typingTaskId;
 
-  el.textContent = '';
-  el.classList.add('typing');
+    el.textContent = '';
+    el.classList.add('typing');
 
-  const dict = window.__i18n ? window.__i18n.dict() : null;
-  const texts = dict && dict['hero.taglines']
-    ? dict['hero.taglines']
-    : ['一位热情、勇敢、从容的前行者'];
+    const dict = window.__i18n ? window.__i18n.dict() : null;
+    const texts = dict && dict['hero.taglines']
+      ? dict['hero.taglines']
+      : ['一位热情、勇敢、从容的前行者'];
 
-  let textIndex = 0;
-  let charIndex = 0;
-  let isDeleting = false;
-  const speed = 100;
-  const deleteSpeed = 50;
-  const pauseTime = 1800;
+    let textIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    const speed = 100;
+    const deleteSpeed = 50;
+    const pauseTime = 1800;
 
-  function tick() {
-    if (myTaskId !== typingTaskId) return;
+    function tick() {
+      if (myTaskId !== typingTaskId) return;
+      const currentText = texts[textIndex];
 
-    const currentText = texts[textIndex];
-
-    if (!isDeleting) {
-      el.textContent = currentText.substring(0, charIndex + 1);
-      charIndex++;
-      if (charIndex === currentText.length) {
-        isDeleting = true;
-        setTimeout(tick, pauseTime);
-        return;
+      if (!isDeleting) {
+        el.textContent = currentText.substring(0, charIndex + 1);
+        charIndex++;
+        if (charIndex === currentText.length) {
+          isDeleting = true;
+          setTimeout(tick, pauseTime);
+          return;
+        }
+        setTimeout(tick, speed);
+      } else {
+        el.textContent = currentText.substring(0, charIndex - 1);
+        charIndex--;
+        if (charIndex === 0) {
+          isDeleting = false;
+          textIndex = (textIndex + 1) % texts.length;
+          setTimeout(tick, 400);
+          return;
+        }
+        setTimeout(tick, deleteSpeed);
       }
-      setTimeout(tick, speed);
-    } else {
-      el.textContent = currentText.substring(0, charIndex - 1);
-      charIndex--;
-      if (charIndex === 0) {
-        isDeleting = false;
-        textIndex = (textIndex + 1) % texts.length;
-        setTimeout(tick, 400);
-        return;
-      }
-      setTimeout(tick, deleteSpeed);
     }
+    setTimeout(tick, 500);
   }
 
-  setTimeout(tick, 500);
-}
-
-runTyping();
-window.__runTyping = runTyping;
+  runTyping();
+  window.__runTyping = runTyping;
+});
 
 // ========================================
 // 滚动动画
 // ========================================
-(function initReveal() {
+safeRun('reveal', function () {
   const elements = document.querySelectorAll('.reveal');
   if (!elements.length) return;
 
@@ -111,12 +126,12 @@ window.__runTyping = runTyping;
   }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
   elements.forEach(el => observer.observe(el));
-})();
+});
 
 // ========================================
 // 双城时钟
 // ========================================
-(function initCityClocks() {
+safeRun('clocks', function () {
   const szEl = document.getElementById('szTime');
   const hkEl = document.getElementById('hkTime');
   if (!szEl || !hkEl) return;
@@ -129,17 +144,17 @@ window.__runTyping = runTyping;
   }
   update();
   setInterval(update, 1000);
-})();
+});
 
 // ========================================
-// 留言平台
+// 留言平台（localStorage）
 // ========================================
-(function initGuestbook() {
+safeRun('guestbook', function () {
   const form = document.getElementById('guestbookForm');
   const list = document.getElementById('guestbookList');
   const nameInput = document.getElementById('guestName');
   const messageInput = document.getElementById('guestMessage');
-  if (!form || !list) return;
+  if (!form || !list || !nameInput || !messageInput) return;
 
   const STORAGE_KEY = 'huajinyao_guestbook';
 
@@ -161,6 +176,12 @@ window.__runTyping = runTyping;
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
 
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   function render() {
     const messages = getMessages();
     if (messages.length === 0) {
@@ -180,12 +201,6 @@ window.__runTyping = runTyping;
     `).join('');
   }
 
-  function escapeHtml(str) {
-    return String(str)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  }
-
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const name = nameInput.value.trim();
@@ -200,12 +215,12 @@ window.__runTyping = runTyping;
 
   window.__guestbookRender = render;
   render();
-})();
+});
 
 // ========================================
 // 返回顶部
 // ========================================
-(function initBackToTop() {
+safeRun('backToTop', function () {
   const btn = document.getElementById('backToTop');
   if (!btn) return;
   window.addEventListener('scroll', () => {
@@ -213,12 +228,12 @@ window.__runTyping = runTyping;
     else btn.classList.remove('visible');
   }, { passive: true });
   btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-})();
+});
 
 // ========================================
-// 音乐系统（含频谱可视化）
+// 音乐系统
 // ========================================
-(function initMusicShelf() {
+safeRun('music', function () {
   const shelf = document.getElementById('musicShelf');
   const audio = document.getElementById('bgMusic');
   const toggle = document.getElementById('musicToggle');
@@ -251,7 +266,6 @@ window.__runTyping = runTyping;
   const MUSIC_DIR = 'music/';
   let currentIndex = -1;
   let isPlaying = false;
-
   let audioCtx = null, analyser = null, visualizerId = null;
 
   function initVisualizer() {
@@ -308,7 +322,7 @@ window.__runTyping = runTyping;
 
   function renderCards() {
     shelf.innerHTML = TRACKS.map((track, i) => `
-      <music-card title="${track.title}" tag="${track.tag}" index="${i}"></music-card>
+      <music-card data-title="${track.title}" data-tag="${track.tag}" data-index="${i}"></music-card>
     `).join('');
   }
 
@@ -317,13 +331,15 @@ window.__runTyping = runTyping;
     cards.forEach((card, i) => {
       card.classList.toggle('playing', i === currentIndex && isPlaying);
     });
-    if (currentIndex >= 0) {
-      nowTitle.textContent = TRACKS[currentIndex].title;
-    } else {
-      const noneText = window.__i18n && window.__i18n.dict()['player.none']
-        ? window.__i18n.dict()['player.none']
-        : '未选择';
-      nowTitle.textContent = noneText;
+    if (nowTitle) {
+      if (currentIndex >= 0) {
+        nowTitle.textContent = TRACKS[currentIndex].title;
+      } else {
+        const noneText = window.__i18n && window.__i18n.dict()['player.none']
+          ? window.__i18n.dict()['player.none']
+          : '未选择';
+        nowTitle.textContent = noneText;
+      }
     }
     toggle.textContent = isPlaying ? '❚❚' : '▶';
   }
@@ -384,31 +400,33 @@ window.__runTyping = runTyping;
   window.__musicUpdateUI = updateUI;
   renderCards();
   updateUI();
-})();
+});
 
 // ========================================
 // Web Component: Music Card
 // ========================================
-class MusicCard extends HTMLElement {
-  connectedCallback() {
-    const title = this.getAttribute('title');
-    const tag = this.getAttribute('tag');
-    const index = this.getAttribute('index');
-    this.innerHTML = `
-      <div class="music-cover">♪</div>
-      <div class="music-title">${title}</div>
-      <span class="music-tag">${tag}</span>
-    `;
-    this.classList.add('music-card');
-    this.dataset.index = index;
+safeRun('musicCard', function () {
+  class MusicCard extends HTMLElement {
+    connectedCallback() {
+      const title = this.getAttribute('data-title');
+      const tag = this.getAttribute('data-tag');
+      const index = this.getAttribute('data-index');
+      this.innerHTML = `
+        <div class="music-cover">♪</div>
+        <div class="music-title">${title}</div>
+        <span class="music-tag">${tag}</span>
+      `;
+      this.classList.add('music-card');
+      this.dataset.index = index;
+    }
   }
-}
-if (!customElements.get('music-card')) customElements.define('music-card', MusicCard);
+  if (!customElements.get('music-card')) customElements.define('music-card', MusicCard);
+});
 
 // ========================================
-// Canvas 粒子网络（回到最初 CodePen 模板效果）
+// Canvas 粒子网络
 // ========================================
-(function initParticleNetwork() {
+safeRun('particles', function () {
   const canvas = document.getElementById('particleCanvas');
   if (!canvas) return;
 
@@ -418,18 +436,18 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
 
   function getParticleCount() {
     const w = window.innerWidth;
-    if (w < 480) return 50;
-    if (w < 768) return 80;
+    if (w < 480) return 40;
+    if (w < 768) return 70;
     if (w < 1024) return 100;
     return 130;
   }
 
   function getLinkDistance() {
     const w = window.innerWidth;
-    if (w < 480) return 100;
-    if (w < 768) return 130;
-    if (w < 1024) return 160;
-    return 180;
+    if (w < 480) return 80;
+    if (w < 768) return 100;
+    if (w < 1024) return 120;
+    return 140;
   }
 
   function getFrameRate() {
@@ -451,9 +469,9 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
     constructor() {
       this.x = Math.random() * width;
       this.y = Math.random() * height;
-      this.vx = (Math.random() - 0.5) * 0.5;
-      this.vy = (Math.random() - 0.5) * 0.5;
-      this.radius = Math.random() * 1.0 + 1.5;
+      this.vx = (Math.random() - 0.5) * 0.4;
+      this.vy = (Math.random() - 0.5) * 0.4;
+      this.radius = Math.random() * 0.6 + 0.8;
     }
     update() {
       this.x += this.vx;
@@ -463,19 +481,14 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
     }
     draw() {
       const color = getParticleColor();
-      const glowR = this.radius * 4;
-      const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, glowR);
-      gradient.addColorStop(0, `rgba(${color}, 0.85)`);
-      gradient.addColorStop(0.4, `rgba(${color}, 0.35)`);
-      gradient.addColorStop(1, `rgba(${color}, 0)`);
       ctx.beginPath();
-      ctx.arc(this.x, this.y, glowR, 0, Math.PI * 2);
-      ctx.fillStyle = gradient;
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${color}, 0.85)`;
       ctx.fill();
 
       ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${color}, 0.95)`;
+      ctx.arc(this.x, this.y, this.radius * 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${color}, 0.1)`;
       ctx.fill();
     }
   }
@@ -503,21 +516,31 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
     const maxDistSq = linkDistance * linkDistance;
 
     for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
+      const p = particles[i];
+      let nearest = [];
+      for (let j = 0; j < particles.length; j++) {
+        if (i === j) continue;
+        const dx = p.x - particles[j].x;
+        const dy = p.y - particles[j].y;
         const distSq = dx * dx + dy * dy;
         if (distSq < maxDistSq) {
-          const dist = Math.sqrt(distSq);
-          const opacity = (1 - dist / linkDistance) * 0.5;
-          ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = `rgba(${color}, ${opacity})`;
-          ctx.lineWidth = 0.7;
-          ctx.stroke();
+          nearest.push({ index: j, distSq });
         }
       }
+      nearest.sort((a, b) => a.distSq - b.distSq);
+      nearest = nearest.slice(0, 3);
+
+      nearest.forEach(n => {
+        const q = particles[n.index];
+        const dist = Math.sqrt(n.distSq);
+        const opacity = (1 - dist / linkDistance) * 0.25;
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(q.x, q.y);
+        ctx.strokeStyle = `rgba(${color}, ${opacity})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      });
     }
   }
 
@@ -560,12 +583,12 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
   themeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
   start();
-})();
+});
 
 // ========================================
 // 滚动进度条
 // ========================================
-(function initScrollProgress() {
+safeRun('scrollProgress', function () {
   const bar = document.getElementById('scrollProgress');
   if (!bar) return;
   window.addEventListener('scroll', () => {
@@ -574,12 +597,12 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
     const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
     bar.style.width = progress + '%';
   }, { passive: true });
-})();
+});
 
 // ========================================
 // 鼠标跟随光晕
 // ========================================
-(function initCursorGlow() {
+safeRun('cursorGlow', function () {
   const glow = document.getElementById('cursorGlow');
   if (!glow) return;
   if (window.innerWidth < 768) return;
@@ -599,12 +622,12 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
     requestAnimationFrame(animate);
   }
   animate();
-})();
+});
 
 // ========================================
 // 卡片 3D 倾斜
 // ========================================
-(function initCardTilt() {
+safeRun('cardTilt', function () {
   const cards = document.querySelectorAll('.card');
   if (!cards.length) return;
   if (window.matchMedia('(pointer: coarse)').matches) return;
@@ -626,12 +649,12 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
       card.style.boxShadow = '';
     });
   });
-})();
+});
 
 // ========================================
 // 磁性按钮
 // ========================================
-(function initMagneticButtons() {
+safeRun('magnetic', function () {
   const buttons = document.querySelectorAll('.btn, .theme-toggle, .lang-toggle');
   if (!buttons.length) return;
   if (window.matchMedia('(pointer: coarse)').matches) return;
@@ -646,12 +669,12 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
     });
     btn.addEventListener('mouseleave', () => btn.style.transform = '');
   });
-})();
+});
 
 // ========================================
 // 主题切换
 // ========================================
-(function initThemeToggle() {
+safeRun('theme', function () {
   const btn = document.getElementById('themeToggle');
   if (!btn) return;
   const STORAGE_KEY = 'huajinyao_theme';
@@ -669,12 +692,12 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
     if (document.startViewTransition) document.startViewTransition(apply);
     else apply();
   });
-})();
+});
 
 // ========================================
 // 中英文切换
 // ========================================
-(function initLangToggle() {
+safeRun('lang', function () {
   const btn = document.getElementById('langToggle');
   if (!btn) return;
   const STORAGE_KEY = 'huajinyao_lang';
@@ -700,7 +723,7 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
       'about.memory.title': '记忆点', 'about.memory.desc': '学风建设组成员，喜欢在学习和生活中保持热情与从容。',
       'timeline.title': '成长轨迹',
       'timeline.item1.title': '入学天大-港理工深圳未来技术学院', 'timeline.item1.desc': '智能医学工程（脑机接口）专业，开始双校学习旅程。',
-      'timeline.item2.title': 'Vibe Coding 课程个人主页项目', 'timeline.item2.desc': '从 V1 到 V6，用 AI 辅助开发完成深色科技风个人主页。',
+      'timeline.item2.title': 'Vibe Coding 课程个人主页项目', 'timeline.item2.desc': '从 V1 到 V3，用 AI 辅助开发完成深色科技风个人主页。',
       'timeline.item3.date': '进行中', 'timeline.item3.title': '数学建模课题', 'timeline.item3.desc': '《基于实际场景需求的个性化背景音乐歌单推荐模型的研究》。',
       'interests.title': '兴趣与技能',
       'interests.art.title': '艺术', 'interests.art.desc': '软笔书法、钢琴、二胡、架子鼓。',
@@ -710,7 +733,7 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
       'projects.title': '项目与作品',
       'projects.p1.title': '数学建模课题', 'projects.p1.desc': '《基于实际场景需求的个性化背景音乐歌单推荐模型的研究》',
       'projects.p1.chip1': '数学建模', 'projects.p1.chip2': '推荐模型',
-      'projects.p2.title': '个人主页 V6', 'projects.p2.desc': '深色科技风 + 双校身份 + Digital Twin。',
+      'projects.p2.title': '个人主页 V3', 'projects.p2.desc': '深色科技风 + 双校身份 + Digital Twin。',
       'campus.title': '校园资源',
       'campus.tju.title': '天津大学官网', 'campus.tju.desc': '母校主页',
       'campus.tjuLib.title': '天大图书馆', 'campus.tjuLib.desc': '文献资源',
@@ -735,7 +758,14 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
       'contact.title': '联系我',
       'contact.desc': '如果你对我的项目感兴趣，或者想交流学习心得，欢迎联系我。',
       'contact.email': '发送邮件',
-      'footer.name': '滑锦尧', 'footer.built': 'Built with Vibe Coding.', 'footer.visits': '本站访问量：'
+      'footer.name': '滑锦尧', 'footer.built': 'Built with Vibe Coding.', 'footer.visits': '本站访问量：',
+      'feedback.title': '留言反馈',
+      'feedback.hint': '反馈不会公开，只有我能看到。请告诉我你在哪里遇到了问题。',
+      'feedback.name': '昵称（可选）',
+      'feedback.relation': '与我的关系',
+      'feedback.device': '反馈针对的设备',
+      'feedback.message': '反馈内容',
+      'feedback.submit': '提交反馈'
     },
     en: {
       'nav.identity': 'Identity', 'nav.about': 'About', 'nav.timeline': 'Timeline',
@@ -757,7 +787,7 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
       'about.memory.title': 'Memory Point', 'about.memory.desc': 'Member of the Study Style Committee, passionate and composed in study and life.',
       'timeline.title': 'Growth Timeline',
       'timeline.item1.title': 'Enrolled at TJU-PolyU Shenzhen Future Technology Institute', 'timeline.item1.desc': 'Intelligent Medical Engineering (BCI), starting the dual-degree journey.',
-      'timeline.item2.title': 'Vibe Coding Course Personal Homepage Project', 'timeline.item2.desc': 'From V1 to V6, building a dark tech-style personal homepage with AI.',
+      'timeline.item2.title': 'Vibe Coding Course Personal Homepage Project', 'timeline.item2.desc': 'From V1 to V3, building a dark tech-style personal homepage with AI.',
       'timeline.item3.date': 'In Progress', 'timeline.item3.title': 'Mathematical Modeling Project', 'timeline.item3.desc': '"Research on Personalized Background Music Playlist Recommendation Model Based on Real-world Needs".',
       'interests.title': 'Interests & Skills',
       'interests.art.title': 'Arts', 'interests.art.desc': 'Chinese calligraphy, piano, erhu, drums.',
@@ -767,7 +797,7 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
       'projects.title': 'Projects & Works',
       'projects.p1.title': 'Mathematical Modeling Project', 'projects.p1.desc': '"Research on Personalized Background Music Playlist Recommendation Model Based on Real-world Needs"',
       'projects.p1.chip1': 'Modeling', 'projects.p1.chip2': 'Recommendation',
-      'projects.p2.title': 'Personal Homepage V6', 'projects.p2.desc': 'Dark tech style + dual identity + Digital Twin.',
+      'projects.p2.title': 'Personal Homepage V3', 'projects.p2.desc': 'Dark tech style + dual identity + Digital Twin.',
       'campus.title': 'Campus Resources',
       'campus.tju.title': 'Tianjin University', 'campus.tju.desc': 'Official Website',
       'campus.tjuLib.title': 'TJU Library', 'campus.tjuLib.desc': 'Resources',
@@ -792,7 +822,14 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
       'contact.title': 'Contact Me',
       'contact.desc': "If you're interested in my projects or want to share ideas, feel free to reach out.",
       'contact.email': 'Send Email',
-      'footer.name': 'Hua Jinyao', 'footer.built': 'Built with Vibe Coding.', 'footer.visits': 'Visits: '
+      'footer.name': 'Hua Jinyao', 'footer.built': 'Built with Vibe Coding.', 'footer.visits': 'Visits: ',
+      'feedback.title': 'Feedback',
+      'feedback.hint': 'Your feedback is private and only visible to me. Please tell me where you had trouble.',
+      'feedback.name': 'Nickname (optional)',
+      'feedback.relation': 'Relation to me',
+      'feedback.device': 'Device you used',
+      'feedback.message': 'Your feedback',
+      'feedback.submit': 'Submit'
     }
   };
 
@@ -809,17 +846,23 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
     const guestNameInput = document.getElementById('guestName');
     const guestMsgInput = document.getElementById('guestMessage');
     const twinInput = document.getElementById('twinInput');
+    const fbName = document.getElementById('fbName');
+    const fbMessage = document.getElementById('fbMessage');
 
     if (lang === 'zh') {
       if (guestNameInput) guestNameInput.placeholder = '你的名字';
       if (guestMsgInput) guestMsgInput.placeholder = '写下你的留言...';
       if (twinInput) twinInput.placeholder = '输入你的问题...';
+      if (fbName) fbName.placeholder = '你的昵称';
+      if (fbMessage) fbMessage.placeholder = '请描述具体位置、体验和问题';
       btn.textContent = 'EN';
       document.documentElement.lang = 'zh-CN';
     } else {
       if (guestNameInput) guestNameInput.placeholder = 'Your name';
       if (guestMsgInput) guestMsgInput.placeholder = 'Write your message...';
       if (twinInput) twinInput.placeholder = 'Type your question...';
+      if (fbName) fbName.placeholder = 'Your nickname';
+      if (fbMessage) fbMessage.placeholder = 'Please describe the location, experience and problem';
       btn.textContent = '中';
       document.documentElement.lang = 'en';
     }
@@ -837,12 +880,12 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
     localStorage.setItem(STORAGE_KEY, currentLang);
     applyLang(currentLang);
   });
-})();
+});
 
 // ========================================
 // Digital Twin
 // ========================================
-(function initDigitalTwin() {
+safeRun('twin', function () {
   const form = document.getElementById('twinForm');
   const input = document.getElementById('twinInput');
   const messages = document.getElementById('twinMessages');
@@ -851,11 +894,11 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
 
   const KNOWLEDGE = [
     { keywords: ['专业', '学什么', 'major', 'study'], answer: '我是智能医学工程（脑机接口）专业的大一本科生，同时在天津大学和香港理工大学注册学籍。这个专业结合了医学、工程和人工智能，主要研究脑机接口、神经工程和智能医疗设备。' },
-    { keywords: ['项目', '在做什么', 'project', '课题'], answer: '我目前在做两个项目：一是数学建模课题《基于实际场景需求的个性化背景音乐歌单推荐模型的研究》；二是这个个人主页本身，用 Vibe Coding 方式从 V1 迭代到 V6。' },
+    { keywords: ['项目', '在做什么', 'project', '课题'], answer: '我目前在做两个项目：一是数学建模课题《基于实际场景需求的个性化背景音乐歌单推荐模型的研究》；二是这个个人主页本身，用 Vibe Coding 方式从 V1 迭代到 V3。' },
     { keywords: ['兴趣', '爱好', 'hobby', '喜欢'], answer: '我喜欢软笔书法、钢琴、二胡、架子鼓，也喜欢跑步、音乐和舞蹈艺术。' },
     { keywords: ['联系', '邮箱', 'email', 'contact', 'github'], answer: '你可以通过以下方式联系我：\n· 邮箱：2761163826@qq.com\n· GitHub：github.com/huajinyao' },
     { keywords: ['学校', '大学', '天大', '港理工', 'polyu', 'tju'], answer: '我就读于天津大学香港理工大学深圳未来技术学院，同时注册天大和港理工双校学籍。约50%课程由港理工授课。' },
-    { keywords: ['主页', '这个网站', 'website'], answer: '这个个人主页是我在 Vibe Coding 课程中从 V1 迭代到 V6 完成的，包含双校身份、粒子网络、音乐篮筐、Digital Twin、中英切换、主题切换等功能。' },
+    { keywords: ['主页', '这个网站', 'website'], answer: '这个个人主页是我在 Vibe Coding 课程中从 V1 迭代到 V3 完成的，包含双校身份、粒子网络、音乐篮筐、Digital Twin、中英切换、主题切换、反馈后台等功能。' },
     { keywords: ['音乐', '歌', 'music', 'song'], answer: '我在主页「我喜欢的音乐」区域放了 20 首喜欢的歌曲，包括 Five hundred miles、Fly me to the moon、月亮代表我的心、稻香等。' },
     { keywords: ['你好', 'hi', 'hello', '嗨'], answer: '你好！我是滑锦尧的数字分身。你可以问我关于我的专业、项目、兴趣、学校、联系方式等问题。' },
     { keywords: ['谢谢', 'thanks'], answer: '不客气！如果还有其他问题，随时问我。' }
@@ -866,7 +909,7 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
   function addBubble(text, type) {
     const div = document.createElement('div');
     div.className = 'twin-bubble twin-' + type;
-    div.innerHTML = text.replace(/\n/g, '<br>');
+    div.innerHTML = String(text).replace(/\n/g, '<br>');
     messages.appendChild(div);
     messages.scrollTop = messages.scrollHeight;
   }
@@ -896,17 +939,19 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
     input.value = '';
   });
 
-  suggestions.addEventListener('click', (e) => {
-    const chip = e.target.closest('.twin-chip');
-    if (!chip) return;
-    handleQuestion(chip.dataset.q);
-  });
-})();
+  if (suggestions) {
+    suggestions.addEventListener('click', (e) => {
+      const chip = e.target.closest('.twin-chip');
+      if (!chip) return;
+      handleQuestion(chip.dataset.q);
+    });
+  }
+});
 
 // ========================================
 // 时间线可展开
 // ========================================
-(function initTimeline() {
+safeRun('timeline', function () {
   document.querySelectorAll('.timeline-content').forEach(item => {
     item.addEventListener('click', () => item.classList.toggle('expanded'));
     item.addEventListener('keydown', (e) => {
@@ -916,12 +961,12 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
       }
     });
   });
-})();
+});
 
 // ========================================
 // 技能条入场
 // ========================================
-(function initSkillBars() {
+safeRun('skillBars', function () {
   const bars = document.querySelectorAll('.skill-bar');
   if (!bars.length) return;
 
@@ -940,12 +985,12 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
   }, { threshold: 0.3 });
 
   bars.forEach(bar => observer.observe(bar));
-})();
+});
 
 // ========================================
 // 技能雷达图
 // ========================================
-(function initRadar() {
+safeRun('radar', function () {
   const canvas = document.getElementById('skillRadar');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
@@ -958,6 +1003,11 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
   function getColor() {
     const isLight = document.body.classList.contains('light-theme');
     return isLight ? '26, 157, 255' : '0, 229, 255';
+  }
+
+  function getTextColor() {
+    const v = getComputedStyle(document.body).getPropertyValue('--text-color').trim();
+    return v || '#f0f0f0';
   }
 
   function draw() {
@@ -1003,7 +1053,7 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
     ctx.strokeStyle = `rgb(${color})`; ctx.lineWidth = 2; ctx.stroke();
 
     ctx.font = '12px Space Grotesk, sans-serif';
-    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-color').trim() || '#f0f0f0';
+    ctx.fillStyle = getTextColor();
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     skills.forEach((s, i) => {
       const [x, y] = point(i, radius + 25);
@@ -1015,11 +1065,94 @@ if (!customElements.get('music-card')) customElements.define('music-card', Music
 
   const themeObserver = new MutationObserver(draw);
   themeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-})();
+});
+
+// ========================================
+// 反馈后台（Supabase）
+// ========================================
+safeRun('feedback', function () {
+  // ⚠️ 把下面两个值替换成你自己的
+  const SUPABASE_URL = 'https://kreadpajypvspodsjjdc.supabase.co';
+  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_BGloJ8t3BS-rHXwso1T1dA__ScAAXtr';
+
+  const btn = document.getElementById('feedbackBtn');
+  const modal = document.getElementById('feedbackModal');
+  const closeBtn = document.getElementById('feedbackClose');
+  const form = document.getElementById('feedbackForm');
+  const statusEl = document.getElementById('fbStatus');
+  const submitBtn = document.getElementById('fbSubmit');
+
+  if (!btn || !modal || !form) return;
+
+  btn.addEventListener('click', () => modal.classList.add('open'));
+  closeBtn.addEventListener('click', () => modal.classList.remove('open'));
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.classList.remove('open');
+  });
+
+  let client = null;
+  if (window.supabase && SUPABASE_PUBLISHABLE_KEY.indexOf('sb_publishable_BGloJ8t3BS-rHXwso1T1dA__ScAAXtr') === -1) {
+    client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (!client) {
+      statusEl.textContent = '反馈功能尚未配置，请联系主页主人。';
+      statusEl.className = 'feedback-status error';
+      return;
+    }
+
+    const name = document.getElementById('fbName').value.trim();
+    const relation = document.getElementById('fbRelation').value;
+    const device = document.getElementById('fbDevice').value;
+    const message = document.getElementById('fbMessage').value.trim();
+
+    if (!message) {
+      statusEl.textContent = '请填写反馈内容。';
+      statusEl.className = 'feedback-status error';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    statusEl.textContent = '提交中…';
+    statusEl.className = 'feedback-status';
+
+    try {
+      const { error } = await client.from('feedback').insert({
+        name: name || null,
+        relation,
+        device,
+        message,
+        version: 'V3'
+      });
+
+      if (error) throw error;
+
+      statusEl.textContent = '提交成功，感谢你的反馈！';
+      statusEl.className = 'feedback-status success';
+      form.reset();
+
+      setTimeout(() => {
+        modal.classList.remove('open');
+        statusEl.textContent = '';
+      }, 3000);
+    } catch (err) {
+      console.error('反馈提交失败：', err);
+      statusEl.textContent = '提交失败，请稍后重试。你的内容已保留。';
+      statusEl.className = 'feedback-status error';
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+});
 
 // ========================================
 // 页面加载完成
 // ========================================
-window.addEventListener('load', () => {
-  document.body.classList.add('loaded');
+safeRun('loaded', function () {
+  window.addEventListener('load', () => {
+    document.body.classList.add('loaded');
+  });
 });

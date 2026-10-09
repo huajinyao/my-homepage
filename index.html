@@ -50,11 +50,11 @@
       </div>
 
       <div class="nav-actions">
-        <button class="theme-toggle" id="themeToggle" aria-label="切换主题">🌙</button>
-        <button class="lang-toggle" id="langToggle" aria-label="切换语言">EN</button>
+        <button class="theme-toggle" id="themeToggle" aria-label="切换主题" type="button">🌙</button>
+        <button class="lang-toggle" id="langToggle" aria-label="切换语言" type="button">EN</button>
       </div>
 
-      <button class="menu-toggle" id="menuToggle" aria-label="打开菜单">☰</button>
+      <button class="menu-toggle" id="menuToggle" aria-label="打开菜单" type="button">☰</button>
       <ul class="nav-links" id="navLinks">
         <li><a href="#identity" data-i18n="nav.identity">身份</a></li>
         <li><a href="#about" data-i18n="nav.about">关于我</a></li>
@@ -141,7 +141,7 @@
           <div class="timeline-content" tabindex="0">
             <span class="timeline-date">2026.10</span>
             <h3 data-i18n="timeline.item2.title">Vibe Coding 课程个人主页项目</h3>
-            <p data-i18n="timeline.item2.desc">从 V1 到 V6，用 AI 辅助开发完成深色科技风个人主页。</p>
+            <p data-i18n="timeline.item2.desc">从 V1 到 V3，用 AI 辅助开发完成深色科技风个人主页。</p>
           </div>
         </div>
         <div class="timeline-item">
@@ -197,7 +197,7 @@
           <span class="chip" data-i18n="projects.p1.chip2">推荐模型</span>
         </a>
         <a href="project-homepage.html" class="card project-card">
-          <h3 data-i18n="projects.p2.title">个人主页 V6</h3>
+          <h3 data-i18n="projects.p2.title">个人主页 V3</h3>
           <p data-i18n="projects.p2.desc">深色科技风 + 双校身份 + Digital Twin。</p>
           <span class="chip">HTML/CSS/JS</span>
         </a>
@@ -285,10 +285,10 @@
         </div>
 
         <div class="twin-suggestions" id="twinSuggestions">
-          <button class="twin-chip" data-q="你的专业是什么" data-i18n="twin.chip1">你的专业是什么？</button>
-          <button class="twin-chip" data-q="你在做什么项目" data-i18n="twin.chip2">你在做什么项目？</button>
-          <button class="twin-chip" data-q="你的兴趣爱好" data-i18n="twin.chip3">你的兴趣爱好？</button>
-          <button class="twin-chip" data-q="怎么联系你" data-i18n="twin.chip4">怎么联系你？</button>
+          <button class="twin-chip" data-q="你的专业是什么" data-i18n="twin.chip1" type="button">你的专业是什么？</button>
+          <button class="twin-chip" data-q="你在做什么项目" data-i18n="twin.chip2" type="button">你在做什么项目？</button>
+          <button class="twin-chip" data-q="你的兴趣爱好" data-i18n="twin.chip3" type="button">你的兴趣爱好？</button>
+          <button class="twin-chip" data-q="怎么联系你" data-i18n="twin.chip4" type="button">怎么联系你？</button>
         </div>
 
         <form class="twin-input" id="twinForm">
@@ -325,6 +325,55 @@
     </section>
   </main>
 
+  <!-- 反馈按钮 -->
+  <button class="feedback-btn" id="feedbackBtn" type="button">💬 反馈</button>
+
+  <!-- 反馈弹窗 -->
+  <div class="feedback-modal" id="feedbackModal">
+    <div class="feedback-panel">
+      <button class="feedback-close" id="feedbackClose" type="button">✕</button>
+      <h3 data-i18n="feedback.title">留言反馈</h3>
+      <p class="feedback-hint" data-i18n="feedback.hint">反馈不会公开，只有我能看到。请告诉我你在哪里遇到了问题。</p>
+
+      <form class="feedback-form" id="feedbackForm">
+        <label>
+          <span data-i18n="feedback.name">昵称（可选）</span>
+          <input type="text" id="fbName" maxlength="30" placeholder="你的昵称">
+        </label>
+
+        <label>
+          <span data-i18n="feedback.relation">与我的关系</span>
+          <select id="fbRelation">
+            <option value="同学">同学</option>
+            <option value="老师">老师</option>
+            <option value="家人">家人</option>
+            <option value="朋友">朋友</option>
+            <option value="其他">其他</option>
+            <option value="不便透露">不便透露</option>
+          </select>
+        </label>
+
+        <label>
+          <span data-i18n="feedback.device">反馈针对的设备</span>
+          <select id="fbDevice">
+            <option value="电脑">电脑</option>
+            <option value="手机">手机</option>
+            <option value="平板">平板</option>
+            <option value="其他">其他</option>
+          </select>
+        </label>
+
+        <label>
+          <span data-i18n="feedback.message">反馈内容</span>
+          <textarea id="fbMessage" maxlength="500" required placeholder="请描述具体位置、体验和问题"></textarea>
+        </label>
+
+        <button type="submit" class="btn btn-primary" id="fbSubmit" data-i18n="feedback.submit">提交反馈</button>
+        <p class="feedback-status" id="fbStatus"></p>
+      </form>
+    </div>
+  </div>
+
   <footer class="site-footer">
     <p>© <span id="year"></span> <span data-i18n="footer.name">滑锦尧</span>. <span data-i18n="footer.built">Built with Vibe Coding.</span></p>
     <p class="visitor-count">
@@ -332,10 +381,10 @@
     </p>
   </footer>
 
-  <button class="back-to-top" id="backToTop" aria-label="返回顶部">↑</button>
+  <button class="back-to-top" id="backToTop" aria-label="返回顶部" type="button">↑</button>
 
   <div class="music-player" id="musicPlayer">
-    <button class="music-toggle" id="musicToggle" aria-label="播放/暂停">▶</button>
+    <button class="music-toggle" id="musicToggle" aria-label="播放/暂停" type="button">▶</button>
     <div class="music-now">
       <span class="music-now-label" data-i18n="player.now">正在播放</span>
       <span class="music-now-title" id="musicNowTitle" data-i18n="player.none">未选择</span>
@@ -345,6 +394,7 @@
   <audio id="bgMusic" preload="none"></audio>
 
   <script src="script.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </body>
 </html>
