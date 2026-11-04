@@ -1125,3 +1125,185 @@ body.light-theme .twin-bubble.is-error { background: #fff0f3; border-color: #ffc
 @media (max-width: 640px) {
   #notes .card-grid { grid-template-columns: 1fr; }
 }
+
+/* ================================================
+   论文页（notes/math-modeling-paper.html）
+   ================================================ */
+.paper-page { max-width: 840px; }
+.paper-page p { text-align: justify; }
+
+.paper-cover {
+  text-align: center;
+  padding: 2.5rem 1rem 2rem;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+.paper-school {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.15rem;
+  letter-spacing: 0.22em;
+  color: var(--text-color);
+  margin-bottom: 0.35rem;
+}
+.paper-school-en {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 1.6rem;
+}
+.paper-kicker {
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+.paper-title {
+  font-family: 'Space Grotesk', 'PingFang SC', sans-serif;
+  font-size: 1.75rem;
+  line-height: 1.5;
+  font-weight: 700;
+  color: var(--text-color);
+  max-width: 26em;
+  margin: 0 auto 1.4rem;
+}
+.paper-byline { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.4rem; }
+.paper-byline b { color: var(--text-color); font-weight: 600; }
+.paper-rule { display: block; width: 70%; max-width: 380px; margin: 1.4rem auto 1rem; opacity: 0.5; }
+.paper-date { font-size: 0.82rem; color: var(--text-muted); }
+
+.paper-toc {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.paper-toc-title {
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  color: var(--primary-color);
+  margin-bottom: 0.7rem;
+}
+.paper-toc ol { list-style: none; margin: 0; padding: 0; }
+.paper-toc li { margin-bottom: 0.3rem; font-size: 0.86rem; line-height: 1.5; }
+.paper-toc a { color: var(--text-muted); transition: var(--transition); }
+.paper-toc a:hover { color: var(--primary-color); }
+.paper-toc .toc-l2 { margin-top: 0.7rem; font-weight: 600; }
+.paper-toc .toc-l2 a { color: var(--text-color); }
+.paper-toc .toc-l3 { padding-left: 1.1rem; }
+.paper-toc .toc-l4 { padding-left: 2.3rem; font-size: 0.82rem; }
+
+.paper-page h2 {
+  font-family: 'Space Grotesk', 'PingFang SC', sans-serif;
+  font-size: 1.2rem;
+  color: var(--text-color);
+  margin: 2.6rem 0 1rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--border-color);
+  letter-spacing: 0.04em;
+}
+.paper-page h3 {
+  font-size: 1.02rem;
+  color: var(--primary-color);
+  margin: 1.8rem 0 0.6rem;
+}
+.paper-page h4 {
+  font-size: 0.94rem;
+  color: var(--text-color);
+  margin: 1.3rem 0 0.5rem;
+}
+.paper-page p { margin-bottom: 1rem; line-height: 1.95; font-size: 0.94rem; }
+.paper-subtitle {
+  text-align: center;
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+.paper-keywords {
+  background: rgba(0, 229, 255, 0.06);
+  border-left: 2px solid var(--primary-color);
+  padding: 0.7rem 1rem;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+.paper-list { margin: 0 0 1rem 1.3rem; }
+.paper-list li { margin-bottom: 0.45rem; line-height: 1.85; font-size: 0.94rem; }
+.paper-data {
+  font-family: 'Menlo', monospace;
+  font-size: 0.78rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 2px solid var(--border-color);
+  padding: 0.7rem 0.9rem;
+  word-break: break-all;
+}
+.paper-figure { margin: 1.5rem 0 0.5rem; text-align: center; }
+.paper-figure img {
+  max-width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: #fff;
+}
+.paper-caption {
+  text-align: center !important;
+  font-size: 0.8rem !important;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem !important;
+}
+.paper-code {
+  background: #0d1117;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  margin: 0.8rem 0 1.2rem;
+}
+.paper-code code {
+  font-family: 'Menlo', monospace;
+  font-size: 0.78rem;
+  line-height: 1.65;
+  color: #c9d1d9;
+  white-space: pre;
+}
+.paper-table-wrap { overflow-x: auto; margin: 1rem 0 1.5rem; }
+.paper-table { font-size: 0.86rem; }
+.paper-table td.num { white-space: nowrap; color: var(--primary-color); font-weight: 600; }
+.paper-table td.note { color: var(--text-muted); font-size: 0.82rem; }
+.paper-table .paper-code { margin: 0.4rem 0; }
+.paper-end { border: none; border-top: 1px solid var(--border-color); margin: 3rem 0 1.5rem; }
+
+body.light-theme .paper-code { background: #f6f8fa; border-color: #dbe3ef; }
+body.light-theme .paper-code code { color: #24292f; }
+body.light-theme .paper-figure img { border-color: #dbe3ef; }
+body.light-theme .paper-data { background: #f6f8fa; }
+
+@media (max-width: 640px) {
+  .paper-title { font-size: 1.35rem; }
+  .paper-school { font-size: 1rem; letter-spacing: 0.08em; }
+  .paper-school-en { font-size: 0.66rem; letter-spacing: 0.08em; margin-bottom: 1.1rem; }
+  .paper-kicker { font-size: 0.72rem; letter-spacing: 0.04em; }
+  .paper-page p { font-size: 0.92rem; line-height: 1.85; }
+  .paper-toc { padding: 1rem 1.1rem; }
+}
+
+.paper-assert {
+  font-weight: 600;
+  color: var(--text-color);
+  border-left: 2px solid var(--primary-color);
+  padding-left: 0.8rem;
+  margin-top: 1.2rem;
+}
+
+/* 项目卡片可点击 */
+.card-link { display: block; position: relative; }
+.card-link:hover { border-color: var(--primary-color); }
+.card-link .chip-cta {
+  margin-left: 0.35rem;
+  border-color: transparent;
+  background: transparent;
+  color: var(--primary-color);
+  padding-left: 0;
+}
+.card-link::after { content: ''; position: absolute; inset: 0; border-radius: 12px; }
