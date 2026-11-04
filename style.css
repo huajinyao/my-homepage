@@ -1119,3 +1119,9 @@ body.light-theme .twin-bubble.is-error { background: #fff0f3; border-color: #ffc
   /* 移动端只留 3 个推荐问题，避免挤占输入区 */
   .twin-suggestions .twin-chip:nth-child(n+4) { display: none; }
 }
+
+/* 学习笔记：四张卡片排成 2×2，避免 3+1 的孤立行 */
+#notes .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 640px) {
+  #notes .card-grid { grid-template-columns: 1fr; }
+}

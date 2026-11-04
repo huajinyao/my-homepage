@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>脑机接口基础：从信号到指令的一条链 | 滑锦尧</title>
+  <meta name="description" content="脑机接口入门笔记：信号来源、侵入与非侵入、三类经典范式、处理流水线与关键指标。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar">
+      <a href="../index.html" class="brand">滑锦尧</a>
+      <ul class="nav-links">
+        <li><a href="../index.html#about">关于我</a></li>
+        <li><a href="../index.html#projects">项目</a></li>
+        <li><a href="../index.html#twin">分身</a></li>
+        <li><a href="../index.html#notes">笔记</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="note-page">
+    <a class="note-back" href="../index.html#notes">← 返回主页</a>
+
+    <h1>脑机接口基础：从信号到指令的一条链</h1>
+    <p class="note-meta">滑锦尧 · 2026-09 · 学习笔记 02</p>
+
+    <div class="note-body">
+      <p>这是我读综述和公开课程后整理的一篇入门笔记，目标是先把「一条完整的链」讲清楚：<strong>大脑产生信号 → 设备采集 → 算法解码 → 变成外部设备的指令</strong>。任何花哨的脑机接口应用，本质上都是这条链上的某一环做得好一点。</p>
+
+      <h2>一、信号从哪里来</h2>
+      <p>神经活动本质是电信号。区别只在于「从哪里测、测多细」：</p>
+      <ul>
+        <li><strong>EEG（脑电）</strong>：头皮电极，无创，时间分辨率高（毫秒级），但空间分辨率差，混着大量噪声和伪迹。</li>
+        <li><strong>ECoG（皮层脑电）</strong>：颅骨内、皮层表面，需要开颅，信号质量显著好于 EEG，多用于癫痫术前评估。</li>
+        <li><strong>皮层内微电极</strong>：插入皮层，能记录单个神经元放电（spike），信息量最大，但长期稳定性是难题。</li>
+        <li><strong>fNIRS / fMRI</strong>：测血氧，空间分辨率好，但慢（秒级），不适合做实时控制。</li>
+      </ul>
+
+      <h2>二、侵入 vs 非侵入</h2>
+      <table class="note-table">
+        <thead><tr><th></th><th>非侵入（EEG 为主）</th><th>侵入（ECoG / 微电极）</th></tr></thead>
+        <tbody>
+          <tr><td>信号质量</td><td>低，易受肌电、眼电干扰</td><td>高，能到单神经元级别</td></tr>
+          <tr><td>风险</td><td>几乎无</td><td>手术风险、免疫反应、长期衰减</td></tr>
+          <tr><td>带宽</td><td>低，通常只能做几个离散指令</td><td>高，可做精细控制</td></tr>
+          <tr><td>典型场景</td><td>康复训练、注意力监测、消费级设备</td><td>重度瘫痪患者的沟通与运动辅助</td></tr>
+        </tbody>
+      </table>
+      <p>一句话：<strong>非侵入赢在可用性，侵入赢在带宽</strong>。两者不是替代关系，是不同场景的选择。</p>
+
+      <h2>三、三类经典范式</h2>
+      <ol>
+        <li><strong>运动想象（Motor Imagery）</strong>：想象左手/右手/脚的运动，对应感觉运动皮层的 μ 节律（8–13Hz）和 β 节律发生变化。优点是自然，缺点是个体差异大、训练成本高。</li>
+        <li><strong>P300</strong>：看到罕见刺激时，约 300ms 后出现正向电位。常用于拼写器——盯着字符矩阵，哪个闪烁对应 P300 就选哪个。</li>
+        <li><strong>SSVEP（稳态视觉诱发电位）</strong>：盯着某个频率闪烁的目标，枕区会出现同频响应。准确率和信息传输率通常最高，但需要持续注视，容易疲劳。</li>
+      </ol>
+
+      <h2>四、一条完整的处理链</h2>
+      <p>以 EEG 运动想象为例：</p>
+      <ol>
+        <li><strong>采集</strong>：多导电极，采样率通常 250–1000Hz。</li>
+        <li><strong>预处理</strong>：带通滤波（如 8–30Hz）、陷波去 50Hz 工频、ICA 去眼电伪迹。</li>
+        <li><strong>分段</strong>：按事件标记切出时间窗（epoch）。</li>
+        <li><strong>特征</strong>：功率谱密度、共空间模式（CSP）、时频特征。</li>
+        <li><strong>分类</strong>：LDA / SVM 起步，现在多用 CNN、EEGNet 等深度模型。</li>
+        <li><strong>输出</strong>：映射成光标移动、轮椅方向、机械臂抓取等指令。</li>
+      </ol>
+
+      <h2>五、怎么衡量好坏</h2>
+      <ul>
+        <li><strong>准确率</strong>：最直观，但单看它容易自欺——二分类 70% 和四分类 70% 完全不是一回事。</li>
+        <li><strong>信息传输率（ITR）</strong>：单位时间能传出多少比特，是更公平的指标，因为它同时惩罚了慢和不准。</li>
+        <li><strong>延迟</strong>：实时控制场景下，超过几百毫秒体验就崩了。</li>
+        <li><strong>可用性</strong>：佩戴时间、校准次数、受试者疲劳度。这些不进论文表格，但决定能不能落地。</li>
+      </ul>
+
+      <h2>六、真正的难点在哪</h2>
+      <p>不是模型不够深，而是<strong>信号本身太脏、太不稳定</strong>：</p>
+      <ul>
+        <li><strong>信噪比低</strong>：头皮 EEG 幅值只有几十微伏，和肌电、眼电、工频混在一起。</li>
+        <li><strong>个体差异</strong>：同一个范式，不同人、不同天，数据分布都不一样。</li>
+        <li><strong>跨会话漂移</strong>：今天校准好的模型，明天电极位置稍变就失效，所以要频繁重新校准。</li>
+        <li><strong>长期稳定性</strong>：侵入式电极的长期生物相容性和信号衰减，仍是核心工程难题。</li>
+      </ul>
+
+      <h2>七、大一的我能先做什么</h2>
+      <p>说实话，现在离「做出一个脑机接口」还很远，但这个方向的基础是可以提前铺的：</p>
+      <ol>
+        <li><strong>数学</strong>：信号与系统（卷积、傅里叶）、概率统计（分类器的基础）。这两门是后面一切的地基。</li>
+        <li><strong>编程</strong>：Python + NumPy/SciPy，能自己读写一段 EEG 数据、画个频谱。</li>
+        <li><strong>动手</strong>：用公开数据集（如 BCI Competition IV 2a）跑一遍「滤波 → CSP → 分类」的完整流程，比看十篇综述都管用。</li>
+        <li><strong>读综述</strong>：先读综述建立地图，再挑一个点深入，别一上来就啃单篇论文。</li>
+      </ol>
+
+      <p>写这篇笔记最大的收获，是把「脑机接口」从一句口号拆成了一条可以逐步动手的链。下一步我打算先把 BCI Competition 的数据集跑通一遍。</p>
+    </div>
+
+    <p class="note-footer">© 2026 滑锦尧 · <a href="../index.html">返回主页</a></p>
+  </main>
+</body>
+</html>

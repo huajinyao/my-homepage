@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibe Coding 入门：把 AI 当搭子，而不是许愿池 | 滑锦尧</title>
+  <meta name="description" content="Vibe Coding 的入门笔记：怎么描述需求、怎么小步验证、哪些 AI 建议应当拒绝。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar">
+      <a href="../index.html" class="brand">滑锦尧</a>
+      <ul class="nav-links">
+        <li><a href="../index.html#about">关于我</a></li>
+        <li><a href="../index.html#projects">项目</a></li>
+        <li><a href="../index.html#twin">分身</a></li>
+        <li><a href="../index.html#notes">笔记</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="note-page">
+    <a class="note-back" href="../index.html#notes">← 返回主页</a>
+
+    <h1>Vibe Coding 入门：把 AI 当搭子，而不是许愿池</h1>
+    <p class="note-meta">滑锦尧 · 2026-09 · 学习笔记 01</p>
+
+    <div class="note-body">
+      <p>这门课第一次让我用「说人话」的方式写代码。一学期下来，我最大的体会是：Vibe Coding 不是一个提示词技巧，而是一套<strong>把模糊想法拆成可验证小步</strong>的方法。这篇笔记记录我踩过的坑和最后跑通的流程。</p>
+
+      <h2>它到底是什么</h2>
+      <p>你描述想要什么，AI 生成或修改代码，你负责判断对不对、要不要收。核心分工没变：<strong>AI 负责打字，你负责决策</strong>。所以「会不会用」的分水岭不在提示词写得多漂亮，而在你能不能一眼看出它哪里改坏了。</p>
+
+      <h2>我的四步流程</h2>
+      <ol>
+        <li><strong>先定结构，再要样式。</strong>第一轮只要「有哪些区块、什么顺序」，不要一上来就要配色和动效。结构错了，后面所有美化都是白做。</li>
+        <li><strong>一轮只改一个目标。</strong>「加滚动动画」和「改配色」分开提。混在一起，出问题时你不知道是哪一半的锅。</li>
+        <li><strong>每次看到效果再继续。</strong>改完立刻在浏览器里点一遍，尤其要看手机尺寸——AI 很少主动考虑窄屏。</li>
+        <li><strong>小步提交。</strong>每轮能跑通就 Git 存一次。AI 有时会「顺手」改坏别的地方，有提交点才能干净地退回去。</li>
+      </ol>
+
+      <h2>提示词里必须有的三样东西</h2>
+      <p>我总结出一个能显著提高命中率的模板，缺一样效果就明显变差：</p>
+      <ul>
+        <li><strong>约束</strong>：技术边界。「只用原生 JS，不引入新依赖」「配色 #0a0e14 + #00e5ff」。</li>
+        <li><strong>上下文</strong>：现状。「现在导航栏是 fixed，移动端用汉堡菜单」。</li>
+        <li><strong>验收标准</strong>：怎么算成功。「手机上粒子数降到 40，滚动不卡」。</li>
+      </ul>
+      <blockquote>反例：「帮我做得好看一点」。这句话信息量为零，AI 只能猜，猜错你还得重来。</blockquote>
+
+      <h2>一个真实案例：粒子网络要不要砍</h2>
+      <p>V2 加了 Canvas 粒子网络，电脑上很好看，手机上直接卡死。AI 的第一版建议是「换成静态 SVG 或纯 CSS 渐变」——从性能角度没错，但那等于把这一版的视觉核心砍掉了。</p>
+      <p>我拒绝了这个方案，改成按屏幕宽度降级：小于 1024px 用 70 个粒子，小于 768px 用 40 个、30fps，小于 480px 用 20 个。效果保住了，手机也不卡了。</p>
+      <p>这件事让我记住一条：<strong>AI 会给你「最安全」的方案，但最安全往往等于最平庸</strong>。你得知道自己要什么，才敢否决它。</p>
+
+      <h2>三个反复踩的坑</h2>
+      <ul>
+        <li><strong>它悄悄改了别的地方。</strong>要它改导航，它顺手动了卡片样式。对策：每轮只让它输出改动的那一段，别整文件重写。</li>
+        <li><strong>它「看起来对」但跑不起来。</strong>变量名对不上、类名拼错。对策：改完立刻在控制台看报错，不要攒着。</li>
+        <li><strong>它不知道你的真实约束。</strong>它不知道你的手机多卡、你愿不愿意维护数据库。这些必须你自己判断。</li>
+      </ul>
+
+      <h2>收工前的自查清单</h2>
+      <ol>
+        <li>桌面和手机各点一遍，有没有溢出、错位</li>
+        <li>控制台有没有红色报错</li>
+        <li>所有链接点一遍，有没有 404</li>
+        <li>内容是不是真实的（不虚构经历、不编数据）</li>
+        <li>Git 有没有存下这个能跑的版本</li>
+      </ol>
+
+      <p>最后一句：Vibe Coding 让我做得更快，但没有让我变懒——<strong>判断力仍然是自己的</strong>。AI 给的是选项，选哪个、为什么选，还得自己说得出理由。</p>
+    </div>
+
+    <p class="note-footer">© 2026 滑锦尧 · <a href="../index.html">返回主页</a></p>
+  </main>
+</body>
+</html>
