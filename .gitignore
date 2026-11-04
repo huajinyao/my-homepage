@@ -25,3 +25,8 @@ netlify/.home/
 # 期末报告（本地交付物，不随站点发布）
 report/
 Jinyao Hua_Personal Homepage Final Version.pdf
+
+# 本地 npm 缓存（体积大，勿提交）
+.npmcache/
+worker/.npmcache/
+netlify/.npmcache/
