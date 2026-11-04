@@ -1,0 +1,22 @@
+# Cloudflare Worker 配置
+# 部署：npx wrangler deploy
+name = "huajinyao-digital-twin"
+main = "src/index.js"
+compatibility_date = "2025-06-01"
+
+# 运行时变量（非密）
+[vars]
+DEEPSEEK_MODEL = "deepseek-chat"
+DEEPSEEK_BASE_URL = "https://api.deepseek.com"
+TEMPERATURE = "0.6"
+MAX_TOKENS = "700"
+HISTORY_TURNS = "8"
+RATE_LIMIT = "20"
+RATE_WINDOW_MS = "600000"
+
+# 只允许你自己的站点调用，别的网站没法拿你的额度
+ALLOWED_ORIGINS = "https://huajinyao.github.io,http://localhost:5501,http://127.0.0.1:5501,http://localhost:8080,http://127.0.0.1:8080"
+
+# 不要把 Key 写在这里！
+# 本地开发：复制 .dev.vars.example 为 .dev.vars 再填
+# 线上部署：npx wrangler secret put DEEPSEEK_API_KEY

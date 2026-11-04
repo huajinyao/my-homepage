@@ -706,7 +706,7 @@ safeRun('lang', function () {
     zh: {
       'nav.identity': '身份', 'nav.about': '关于我', 'nav.timeline': '轨迹',
       'nav.projects': '项目', 'nav.campus': '校园', 'nav.music': '音乐',
-      'nav.twin': '对话', 'nav.guestbook': '留言', 'nav.contact': '联系',
+      'nav.twin': '分身', 'nav.guestbook': '留言', 'nav.contact': '联系',
       'clock.sz': '深圳', 'clock.hk': '香港',
       'hero.avatar': '滑',
       'hero.greeting': '你好，我是', 'hero.name': '滑锦尧',
@@ -736,10 +736,11 @@ safeRun('lang', function () {
       'projects.p1.method': '方法：协同过滤 + 情感分析 + 场景匹配',
       'projects.p1.hard': '难点：冷启动问题、场景标签稀疏',
       'projects.p1.chip1': '数学建模', 'projects.p1.chip2': '推荐模型',
-      'projects.p2.title': '个人主页 V4', 'projects.p2.desc': '深色科技风 + 双校身份 + Digital Twin。',
-      'projects.p2.role': '我的角色：独立完成从 V1 到 V4 的全部迭代',
+      'projects.p2.title': '个人主页 V5（期末版）', 'projects.p2.desc': '深色科技风 + 双校身份 + 接入 DeepSeek 的数字分身。',
+      'projects.p2.role': '我的角色：独立完成从 V1 到 V5 的全部迭代',
       'projects.p2.stack': '技术栈：HTML/CSS/原生 JS + Canvas + Web Audio API',
-      'projects.p2.deploy': '发布：GitHub Pages 静态托管',
+      'projects.p2.twin': '数字分身：DeepSeek deepseek-chat + Cloudflare Workers 后端',
+      'projects.p2.deploy': '发布：GitHub Pages 静态托管 + Workers 接口',
       'campus.title': '校园资源',
       'campus.tju.title': '天津大学官网', 'campus.tju.desc': '母校主页',
       'campus.tjuLib.title': '天大图书馆', 'campus.tjuLib.desc': '文献资源',
@@ -750,14 +751,29 @@ safeRun('lang', function () {
       'campus.learn.title': 'Learn@PolyU', 'campus.learn.desc': '课程学习平台',
       'campus.eStudent.title': 'PolyU eStudent', 'campus.eStudent.desc': '学生信息系统',
       'notes.title': '学习笔记',
+      'notes.n1.title': '从 V1 到 V4：迭代复盘', 'notes.n1.desc': '2026-10 · 每版改了什么、为什么改、哪些 AI 建议被否决',
+      'notes.n2.title': '数字分身是怎么做成的', 'notes.n2.desc': '2026-11 · 知识库、提示词、流式后端与测试',
       'music.title': '我喜欢的音乐', 'music.desc': '共 20 首，点击卡片切换播放，可横向滑动浏览。',
       'player.now': '正在播放', 'player.none': '未选择',
-      'twin.title': '和我聊聊',
-      'twin.desc': '这是基于我的个人知识库的对话入口，你可以问我关于我的专业、项目、兴趣等问题。',
-      'twin.intro': '你好，我是滑锦尧的数字分身。你可以问我：<br>· 你的专业是什么？<br>· 你在做什么项目？<br>· 你的兴趣爱好有哪些？<br>· 怎么联系你？',
-      'twin.chip1': '你的专业是什么？', 'twin.chip2': '你在做什么项目？',
-      'twin.chip3': '你的兴趣爱好？', 'twin.chip4': '怎么联系你？',
+      'twin.title': '数字分身',
+      'twin.desc': '这不是提前写好的关键词问答：它接入了 DeepSeek 大模型，会基于我的个人资料现场组织回答——资料里的任何细节都可以问，没预设过的问题也能答。',
+      'twin.status': '数字分身 · DeepSeek',
+      'twin.reset': '新对话',
+      'twin.label': '你的问题',
       'twin.send': '发送',
+      'twin.stop': '停止',
+      'twin.note': '回答由 DeepSeek 模型基于我的个人资料实时生成，可能有误；重要事情请直接邮件联系我。',
+      'twin.intro': '你好，我是滑锦尧的数字分身。我不是背答案的关键词机器人——这些话是 DeepSeek 大模型基于我的资料现场生成的。\n可以问我：专业课到底学什么、数学建模那个课题怎么做的、平时听什么歌，或者故意为难我一下。',
+      'twin.thinking': '正在组织回答…',
+      'twin.stopped': '已停止生成',
+      'twin.retry': '重试',
+      'twin.statusError': '连接异常',
+      'twin.err.rate': '问得有点快，休息一下再来～也可以直接发邮件给我。',
+      'twin.err.config': '数字分身后端还没接上，先发邮件给我吧。',
+      'twin.err.server': '模型服务暂时不可用，稍后再试，或者直接邮件联系我。',
+      'twin.err.network': '网络好像不太稳，检查一下连接再试。',
+      'twin.err.empty': '这次没生成内容，再问一次试试。',
+      'twin.chips': ['你的专业具体学什么？', '数学建模那个课题你负责哪部分？', '你为什么选脑机接口？', '这个数字分身是怎么做出来的？', '平时喜欢听什么音乐？'],
       'guestbook.title': '留言给我',
       'guestbook.desc': '欢迎留下你的想法、建议或鼓励。你的留言会保存在本地浏览器中，并展示在下方。',
       'guestbook.submit': '提交留言', 'guestbook.empty': '还没有留言，来写下第一条吧。',
@@ -769,7 +785,7 @@ safeRun('lang', function () {
     en: {
       'nav.identity': 'Identity', 'nav.about': 'About', 'nav.timeline': 'Timeline',
       'nav.projects': 'Projects', 'nav.campus': 'Campus', 'nav.music': 'Music',
-      'nav.twin': 'Chat', 'nav.guestbook': 'Guestbook', 'nav.contact': 'Contact',
+      'nav.twin': 'Twin', 'nav.guestbook': 'Guestbook', 'nav.contact': 'Contact',
       'clock.sz': 'Shenzhen', 'clock.hk': 'Hong Kong',
       'hero.avatar': 'Hua',
       'hero.greeting': "Hi, I'm", 'hero.name': 'Hua Jinyao',
@@ -799,10 +815,11 @@ safeRun('lang', function () {
       'projects.p1.method': 'Method: collaborative filtering + sentiment analysis + scenario matching',
       'projects.p1.hard': 'Challenges: cold start, sparse scenario tags',
       'projects.p1.chip1': 'Modeling', 'projects.p1.chip2': 'Recommendation',
-      'projects.p2.title': 'Personal Homepage V4', 'projects.p2.desc': 'Dark tech style + dual identity + Digital Twin.',
-      'projects.p2.role': 'My role: independently led V1 → V4 iteration',
+      'projects.p2.title': 'Personal Homepage V5 (final)', 'projects.p2.desc': 'Dark tech style, dual identity, and a real LLM-powered digital twin.',
+      'projects.p2.role': 'My role: independently built every iteration from V1 to V5',
       'projects.p2.stack': 'Stack: HTML/CSS/vanilla JS + Canvas + Web Audio API',
-      'projects.p2.deploy': 'Deploy: GitHub Pages static hosting',
+      'projects.p2.twin': 'Twin: DeepSeek deepseek-chat + a Cloudflare Workers backend',
+      'projects.p2.deploy': 'Deployed on GitHub Pages with a Workers API',
       'campus.title': 'Campus Resources',
       'campus.tju.title': 'Tianjin University', 'campus.tju.desc': 'Official Website',
       'campus.tjuLib.title': 'TJU Library', 'campus.tjuLib.desc': 'Resources',
@@ -813,14 +830,29 @@ safeRun('lang', function () {
       'campus.learn.title': 'Learn@PolyU', 'campus.learn.desc': 'Learning Platform',
       'campus.eStudent.title': 'PolyU eStudent', 'campus.eStudent.desc': 'Student Information System',
       'notes.title': 'Study Notes',
+      'notes.n1.title': 'From V1 to V4: an iteration log', 'notes.n1.desc': 'Oct 2026 · what changed each version, and which AI suggestions I rejected',
+      'notes.n2.title': 'How the digital twin was built', 'notes.n2.desc': 'Nov 2026 · knowledge base, prompt, streaming backend and tests',
       'music.title': 'My Favorite Music', 'music.desc': '20 tracks, click to play, scroll horizontally to browse.',
       'player.now': 'Now Playing', 'player.none': 'Not Selected',
-      'twin.title': 'Chat with Me',
-      'twin.desc': 'This is a chat entry based on my personal knowledge base. You can ask me about my major, projects, and interests.',
-      'twin.intro': "Hi, I'm Hua Jinyao's digital twin. You can ask me:<br>· What's your major?<br>· What projects are you working on?<br>· What are your hobbies?<br>· How can I contact you?",
-      'twin.chip1': "What's your major?", 'twin.chip2': 'What projects are you working on?',
-      'twin.chip3': 'What are your hobbies?', 'twin.chip4': 'How can I contact you?',
+      'twin.title': 'Digital Twin',
+      'twin.desc': "Not a scripted FAQ: it calls a real DeepSeek model and answers from my actual profile on the fly. Ask anything in the profile — including questions I never prepared for.",
+      'twin.status': 'Digital Twin · DeepSeek',
+      'twin.reset': 'New chat',
+      'twin.label': 'Your question',
       'twin.send': 'Send',
+      'twin.stop': 'Stop',
+      'twin.note': 'Answers are generated live by DeepSeek from my profile and may be wrong. For anything important, please email me directly.',
+      'twin.intro': "Hi, I'm Jinyao's digital twin. I'm not a keyword bot — these words are generated live by DeepSeek from his profile.\nTry asking what he actually studies, how the math-modeling project went, what music he listens to, or try to stump me.",
+      'twin.thinking': 'Thinking…',
+      'twin.stopped': 'stopped',
+      'twin.retry': 'Retry',
+      'twin.statusError': 'Connection issue',
+      'twin.err.rate': 'A bit too fast — take a breath and try again, or just email me.',
+      'twin.err.config': "The twin's backend isn't connected yet. Please email me instead.",
+      'twin.err.server': 'The model service is unavailable right now. Try again later or email me.',
+      'twin.err.network': 'Network looks unstable. Check your connection and retry.',
+      'twin.err.empty': 'Nothing came back that time. Please ask again.',
+      'twin.chips': ['What exactly do you study?', 'What was your role in the math-modeling project?', 'Why brain-computer interfaces?', 'How was this digital twin built?', 'What music do you listen to?'],
       'guestbook.title': 'Leave a Message',
       'guestbook.desc': 'Feel free to leave your thoughts, suggestions, or encouragement. Messages are stored in your browser.',
       'guestbook.submit': 'Submit', 'guestbook.empty': 'No messages yet. Be the first to write one.',
@@ -859,6 +891,7 @@ safeRun('lang', function () {
       document.documentElement.lang = 'en';
     }
 
+    if (window.__twinLangChanged) window.__twinLangChanged();
     if (window.__guestbookRender) window.__guestbookRender();
     if (window.__musicUpdateUI) window.__musicUpdateUI();
     if (window.__runTyping) window.__runTyping();
@@ -875,69 +908,332 @@ safeRun('lang', function () {
 });
 
 // ========================================
-// Digital Twin
+// 数字分身 v2：真实大模型对话（DeepSeek + Cloudflare Workers）
 // ========================================
 safeRun('twin', function () {
   const form = document.getElementById('twinForm');
   const input = document.getElementById('twinInput');
-  const messages = document.getElementById('twinMessages');
-  const suggestions = document.getElementById('twinSuggestions');
-  if (!form || !input || !messages) return;
+  const messagesEl = document.getElementById('twinMessages');
+  const suggestionsEl = document.getElementById('twinSuggestions');
+  const sendBtn = document.getElementById('twinSend');
+  const stopBtn = document.getElementById('twinStop');
+  const resetBtn = document.getElementById('twinReset');
+  const statusEl = document.getElementById('twinStatus');
+  const dotEl = document.getElementById('twinDot');
+  if (!form || !input || !messagesEl) return;
 
-  const KNOWLEDGE = [
-    { keywords: ['专业', '学什么', 'major', 'study'], answer: '我是智能医学工程（脑机接口）专业的大一本科生，同时在天津大学和香港理工大学注册学籍。这个专业结合了医学、工程和人工智能，主要研究脑机接口、神经工程和智能医疗设备。' },
-    { keywords: ['项目', '在做什么', 'project', '课题'], answer: '我目前在做两个项目：一是数学建模课题《基于实际场景需求的个性化背景音乐歌单推荐模型的研究》；二是这个个人主页本身，用 Vibe Coding 方式从 V1 迭代到 V4。' },
-    { keywords: ['兴趣', '爱好', 'hobby', '喜欢'], answer: '我喜欢软笔书法、钢琴、二胡、架子鼓，也喜欢跑步、音乐和舞蹈艺术。' },
-    { keywords: ['联系', '邮箱', 'email', 'contact', 'github'], answer: '你可以通过以下方式联系我：\n· 邮箱：2761163826@qq.com\n· GitHub：github.com/huajinyao' },
-    { keywords: ['学校', '大学', '天大', '港理工', 'polyu', 'tju'], answer: '我就读于天津大学香港理工大学深圳未来技术学院，同时注册天大和港理工双校学籍。约50%课程由港理工授课。' },
-    { keywords: ['主页', '这个网站', 'website'], answer: '这个个人主页是我在 Vibe Coding 课程中从 V1 迭代到 V4 完成的，包含双校身份、粒子网络、音乐篮筐、Digital Twin、中英切换、主题切换等功能。' },
-    { keywords: ['音乐', '歌', 'music', 'song'], answer: '我在主页「我喜欢的音乐」区域放了 20 首喜欢的歌曲，包括 Five hundred miles、Fly me to the moon、月亮代表我的心、稻香等。' },
-    { keywords: ['你好', 'hi', 'hello', '嗨'], answer: '你好！我是滑锦尧的数字分身。你可以问我关于我的专业、项目、兴趣、学校、联系方式等问题。' },
-    { keywords: ['谢谢', 'thanks'], answer: '不客气！如果还有其他问题，随时问我。' }
-  ];
+  const API_BASE = (window.TWIN_API_BASE || '').replace(/\/+$/, '');
+  const STORAGE_KEY = 'huajinyao_twin_v2';
+  const MAX_SEND = 16;
 
-  const FALLBACK = '抱歉，我暂时没有关于这个问题的答案。你可以换个方式问，或者直接在下方留言区给我留言。';
+  // 部署到 GitHub Pages 但还没填 Worker 地址时，给出明确提示而不是静默失败
+  const NEEDS_CONFIG =
+    !API_BASE && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
 
-  function addBubble(text, type) {
-    const div = document.createElement('div');
-    div.className = 'twin-bubble twin-' + type;
-    div.innerHTML = String(text).replace(/\n/g, '<br>');
-    messages.appendChild(div);
-    messages.scrollTop = messages.scrollHeight;
+  const state = { history: [], busy: false, controller: null, model: '' };
+
+  function t(key, fallback) {
+    const d = window.__i18n && window.__i18n.dict();
+    const v = d && d[key];
+    return v === undefined || v === null ? fallback || '' : v;
   }
 
-  function findAnswer(question) {
-    const q = question.toLowerCase().trim();
-    let bestMatch = null, bestScore = 0;
-    KNOWLEDGE.forEach(item => {
-      let score = 0;
-      item.keywords.forEach(kw => { if (q.includes(kw.toLowerCase())) score++; });
-      if (score > bestScore) { bestScore = score; bestMatch = item; }
+  function curLang() {
+    const l = window.__i18n ? window.__i18n.currentLang() : 'zh';
+    return l === 'en' ? 'en' : 'zh';
+  }
+
+  /* ------------------------- 安全渲染 ------------------------- */
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
-    return bestScore > 0 ? bestMatch.answer : FALLBACK;
   }
 
-  function handleQuestion(question) {
-    if (!question.trim()) return;
-    addBubble(question, 'user');
-    setTimeout(() => addBubble(findAnswer(question), 'bot'), 400);
+  // 只支持 **加粗**、`代码` 和换行，其余一律转义，避免 XSS
+  function renderRich(s) {
+    return escapeHtml(s)
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\n/g, '<br>');
   }
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const q = input.value.trim();
-    if (!q) return;
-    handleQuestion(q);
+  function scrollToBottom(force) {
+    const gap = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
+    if (force || gap < 140) messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function addBubble(role, html, extra) {
+    const div = document.createElement('div');
+    div.className = 'twin-bubble twin-' + (role === 'user' ? 'user' : 'bot') + (extra ? ' ' + extra : '');
+    div.innerHTML = html;
+    messagesEl.appendChild(div);
+    scrollToBottom(true);
+    return div;
+  }
+
+  function renderIntro() {
+    const intro = document.createElement('div');
+    intro.className = 'twin-bubble twin-bot twin-intro';
+    intro.innerHTML = renderRich(t('twin.intro', '你好，我是滑锦尧的数字分身。'));
+    messagesEl.appendChild(intro);
+  }
+
+  function renderChips() {
+    if (!suggestionsEl) return;
+    const chips = t('twin.chips', []);
+    suggestionsEl.innerHTML = '';
+    (Array.isArray(chips) ? chips : []).forEach(function (q) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'twin-chip';
+      b.textContent = q;
+      b.addEventListener('click', function () { send(q); });
+      suggestionsEl.appendChild(b);
+    });
+  }
+
+  function setStatus(kind, text) {
+    if (dotEl) dotEl.className = 'twin-dot' + (kind ? ' is-' + kind : '');
+    if (statusEl && text) statusEl.textContent = text;
+  }
+
+  function statusReady() {
+    setStatus('ready', (curLang() === 'en' ? 'Digital Twin · ' : '数字分身 · ') + (state.model || 'DeepSeek'));
+  }
+
+  function setBusy(busy) {
+    state.busy = busy;
+    if (sendBtn) sendBtn.disabled = busy;
+    if (stopBtn) stopBtn.hidden = !busy;
+    input.disabled = busy;
+    if (!busy) input.focus({ preventScroll: true });
+  }
+
+  /* ------------------------- 持久化 ------------------------- */
+  function persist() {
+    try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state.history.slice(-20))); } catch (e) {}
+  }
+
+  function restore() {
+    try {
+      const raw = sessionStorage.getItem(STORAGE_KEY);
+      if (!raw) return false;
+      const arr = JSON.parse(raw);
+      if (!Array.isArray(arr)) return false;
+      arr.forEach(function (m) {
+        if (m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string') {
+          state.history.push({ role: m.role, content: m.content });
+          addBubble(m.role, renderRich(m.content));
+        }
+      });
+    } catch (e) {}
+    return state.history.length > 0;
+  }
+
+  /* ------------------------- 错误文案 ------------------------- */
+  function errorMessage(err) {
+    const code = err && err.code;
+    if (code === 'rate_limited') return t('twin.err.rate', '问得有点快，休息一下再来。');
+    if (code === 'not_configured') return t('twin.err.config', '后端还没配置好，可以先邮件联系我。');
+    if (code === 'upstream_unreachable' || code === 'upstream_error' || code === 'http_5') {
+      return t('twin.err.server', '模型服务暂时不可用，稍后再试。');
+    }
+    if (code === 'invalid' && err.message) return err.message;
+    if ((err && err.name === 'TypeError') || !navigator.onLine) {
+      return t('twin.err.network', '网络好像不太稳，检查一下连接再试。');
+    }
+    return t('twin.err.server', '模型服务暂时不可用，稍后再试。');
+  }
+
+  /* ------------------------- 流式请求 ------------------------- */
+  async function stream() {
+    const bubble = addBubble('bot', '<span class="twin-typing"><i></i><i></i><i></i></span>', 'is-streaming');
+    let text = '';
+    let finished = false;
+
+    if (NEEDS_CONFIG) {
+      bubble.classList.remove('is-streaming');
+      bubble.classList.add('is-error');
+      bubble.innerHTML = escapeHtml(t('twin.err.config', '后端还没配置好'));
+      setStatus('error', t('twin.err.config', '未配置'));
+      setBusy(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    state.controller = controller;
+
+    try {
+      const res = await fetch(API_BASE + '/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: state.history.slice(-MAX_SEND),
+          lang: curLang()
+        }),
+        signal: controller.signal
+      });
+
+      if (!res.ok) {
+        let detail = null;
+        try { detail = await res.json(); } catch (e) {}
+        throw {
+          code: (detail && detail.error) || 'http_' + res.status,
+          status: res.status,
+          message: detail && detail.message
+        };
+      }
+      if (!res.body) throw { code: 'no_body' };
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let first = true;
+
+      while (true) {
+        const chunk = await reader.read();
+        if (chunk.done) break;
+        buffer += decoder.decode(chunk.value, { stream: true });
+
+        const parts = buffer.split('\n\n');
+        buffer = parts.pop() || '';
+
+        for (let i = 0; i < parts.length; i++) {
+          const line = parts[i].split('\n').find(function (l) { return l.indexOf('data:') === 0; });
+          if (!line) continue;
+          const payload = line.slice(5).trim();
+          if (!payload || payload === '[DONE]') continue;
+
+          let obj;
+          try { obj = JSON.parse(payload); } catch (e) { continue; }
+
+          if (obj.error) throw { code: obj.error, message: obj.message };
+          if (obj.d) {
+            if (first) { bubble.innerHTML = ''; first = false; }
+            text += obj.d;
+            bubble.innerHTML = renderRich(text);
+            scrollToBottom();
+          }
+          if (obj.done) finished = true;
+        }
+      }
+
+      bubble.classList.remove('is-streaming');
+
+      if (!text.trim()) {
+        bubble.classList.add('is-error');
+        bubble.innerHTML = escapeHtml(t('twin.err.empty', '这次没生成内容，再问一次试试。'));
+        setStatus('error', t('twin.statusError', '连接异常'));
+      } else {
+        state.history.push({ role: 'assistant', content: text });
+        persist();
+        statusReady();
+      }
+    } catch (err) {
+      bubble.classList.remove('is-streaming');
+
+      if (err && err.name === 'AbortError') {
+        if (text.trim()) {
+          state.history.push({ role: 'assistant', content: text });
+          persist();
+          bubble.insertAdjacentHTML('beforeend', '<br><span class="twin-stopped">（' + escapeHtml(t('twin.stopped', '已停止生成')) + '）</span>');
+        } else {
+          bubble.remove();
+        }
+      } else {
+        bubble.classList.add('is-error');
+        bubble.innerHTML = escapeHtml(errorMessage(err));
+
+        const retry = document.createElement('button');
+        retry.type = 'button';
+        retry.className = 'twin-retry';
+        retry.textContent = t('twin.retry', '重试');
+        retry.addEventListener('click', function () {
+          bubble.remove();
+          setBusy(true);
+          stream();
+        });
+        bubble.appendChild(retry);
+        setStatus('error', t('twin.statusError', '连接异常'));
+      }
+    } finally {
+      state.controller = null;
+      if (!finished && !state.busy) {
+        // 出错或中止时也要恢复输入
+      }
+      if (state.busy) setBusy(false);
+    }
+  }
+
+  /* ------------------------- 发送 ------------------------- */
+  function send(raw) {
+    const q = String(raw || '').trim();
+    if (!q || state.busy) return;
+
+    addBubble('user', renderRich(q));
+    state.history.push({ role: 'user', content: q });
+    persist();
+
     input.value = '';
+    setBusy(true);
+    setStatus('busy', t('twin.thinking', '正在组织回答…'));
+    stream();
+  }
+
+  /* ------------------------- 事件绑定 ------------------------- */
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    send(input.value);
   });
 
-  if (suggestions) {
-    suggestions.addEventListener('click', (e) => {
-      const chip = e.target.closest('.twin-chip');
-      if (!chip) return;
-      handleQuestion(chip.dataset.q);
+  if (stopBtn) {
+    stopBtn.addEventListener('click', function () {
+      if (state.controller) state.controller.abort();
     });
   }
+
+  if (resetBtn) {
+    resetBtn.addEventListener('click', function () {
+      if (state.controller) state.controller.abort();
+      state.history = [];
+      try { sessionStorage.removeItem(STORAGE_KEY); } catch (e) {}
+      messagesEl.innerHTML = '';
+      renderIntro();
+      renderChips();
+      statusReady();
+      input.value = '';
+      input.focus();
+      setBusy(false);
+    });
+  }
+
+  window.__twinLangChanged = function () {
+    renderChips();
+    if (!state.busy) statusReady();
+  };
+
+  /* ------------------------- 初始化 ------------------------- */
+  renderChips();
+  if (!restore()) renderIntro();
+  statusReady();
+  setBusy(false);
+
+  // 探活：显示真实模型名，顺便让老师一眼看到后端已经接上
+  fetch(API_BASE + '/api/health')
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (j) {
+      if (j && j.ok) {
+        state.model = j.model || 'DeepSeek';
+        statusReady();
+      } else {
+        setStatus('error', t('twin.err.config', '后端未连接'));
+      }
+    })
+    .catch(function () {
+      if (NEEDS_CONFIG) setStatus('error', t('twin.err.config', '后端未连接'));
+      else setStatus('error', t('twin.statusError', '连接异常'));
+    });
 });
 
 // ========================================

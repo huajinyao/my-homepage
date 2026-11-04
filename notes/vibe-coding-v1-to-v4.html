@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>从 V1 到 V4：一个人主页的迭代复盘 | 滑锦尧</title>
+  <meta name="description" content="滑锦尧的个人主页迭代复盘：V1 到 V4 每一版改了什么、为什么改、哪些 AI 建议被否决。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../style.css" media="print" onload="this.media='all'">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar">
+      <a href="../index.html" class="brand">滑锦尧</a>
+      <ul class="nav-links">
+        <li><a href="../index.html#about">关于我</a></li>
+        <li><a href="../index.html#projects">项目</a></li>
+        <li><a href="../index.html#twin">分身</a></li>
+        <li><a href="../index.html#notes">笔记</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="note-page">
+    <a class="note-back" href="../index.html#notes">← 返回主页</a>
+
+    <h1>从 V1 到 V4：一个人主页的迭代复盘</h1>
+    <p class="note-meta">滑锦尧 · 2026-10 · 学习笔记 01</p>
+
+    <div class="note-body">
+      <p>这篇笔记记录我的个人主页从 V1 到 V4 到底改了什么、为什么改。写下来的原因很实际：如果不复盘，下一版大概率会重复上一版的错误。</p>
+
+      <h2>V1：先让它能打开</h2>
+      <p>V1 的目标只有一个——<strong>一个能预览、内容真实、结构清楚的 MVP</strong>。浅色背景，CSS Grid 卡片，顶部导航，移动端折叠菜单。</p>
+      <p>当时做了一个关键取舍：没有合适的照片，头像就用字母徽标「滑」占位，而不是去网上找一张图凑数。这条「不虚构」的原则后来一直保留。</p>
+
+      <h2>V2：从「能用」到「像我」</h2>
+      <p>V1 的问题是任何人都能做出 V1。V2 参考了 CodePen 上的 <em>The Neural Network Hero Banner</em>（作者 Kuldeep Rajput），把整体换成深色科技风：背景 <code>#0a0e14</code>，主色 <code>#00e5ff</code>，名字发光，Canvas 粒子网络。</p>
+      <p>选深色不是我一时兴起——智能医学工程（脑机接口）这个方向本身就带着「信号、神经、设备」的气质，深色加青蓝比浅色更贴。</p>
+
+      <h3>移动端性能是这一版最实际的问题</h3>
+      <p>粒子网络在电脑上很漂亮，在手机上直接卡死。解决办法是按屏幕宽度动态降级，而不是简单删掉效果：</p>
+      <table class="note-table">
+        <thead><tr><th>屏幕宽度</th><th>粒子数</th><th>连线距离</th><th>帧率</th></tr></thead>
+        <tbody>
+          <tr><td>&lt; 1024px</td><td>70</td><td>120px</td><td>60fps</td></tr>
+          <tr><td>&lt; 768px</td><td>40</td><td>100px</td><td>30fps</td></tr>
+          <tr><td>&lt; 480px</td><td>20</td><td>80px</td><td>30fps</td></tr>
+        </tbody>
+      </table>
+      <p>AI 当时建议把粒子网络换成静态 SVG 或纯 CSS 渐变，我拒绝了——视觉效果是这版的核心，应该优化参数而不是砍掉功能。</p>
+
+      <h2>V3：让它有功能</h2>
+      <p>V3 加了三个东西：<strong>滚动淡入</strong>（Intersection Observer，比监听 scroll 性能好）、<strong>打字机效果</strong>、<strong>留言板</strong>。</p>
+      <p>留言板用 <code>localStorage</code>，key 是 <code>huajinyao_guestbook</code>，最多显示 20 条。所有用户输入在渲染前都过一遍 <code>escapeHtml</code>，否则一个 <code>&lt;script&gt;</code> 就能把页面打穿。这一版也补了空状态提示。</p>
+      <blockquote>AI 建议上 Supabase 做真后端。当时判断：课程作业阶段没有真实多人留言的需求，localStorage 已经够用，引入后端只会增加部署和密钥管理的复杂度。这个判断在期末被推翻了——因为数字分身必须有一个服务端来藏 API Key。</blockquote>
+
+      <h2>V4：补齐身份与细节</h2>
+      <p>V4 是内容层面的补齐：双校身份卡片、校园资源链接、成长轨迹时间线、音乐播放器（20 首）、技能雷达图、中英切换、明暗主题切换、访问量统计。</p>
+      <p>这一版也开始做减法：修掉了几个失效链接，压掉了首屏不必要的资源加载（CSS 改成 <code>media="print"</code> 异步加载），移动端字号统一。</p>
+
+      <h2>期末版：把「数字分身」做成真的</h2>
+      <p>期中时数字分身只是个占位——9 条关键词匹配，问「你导师是谁」就直接兜底。期末换成了真正调用 DeepSeek 大模型的实现，前后端都重写了。</p>
+      <p>详细的技术细节写在另一篇笔记里：<a href="digital-twin.html">《我是怎么把数字分身做成真的》</a>。</p>
+
+      <h2>回头看，三条有用的经验</h2>
+      <ol>
+        <li><strong>先定「不能做什么」，再定「要做什么」。</strong>V1 的「不虚构」原则省掉了后面很多返工。</li>
+        <li><strong>AI 的建议要带着约束听。</strong>它不知道你的手机有多卡，也不知道你愿不愿意管一个数据库。</li>
+        <li><strong>先能用，再好看，最后才是聪明。</strong>顺序反了会一直推倒重来。</li>
+      </ol>
+    </div>
+
+    <p class="note-footer">© 2026 滑锦尧 · <a href="../index.html">返回主页</a></p>
+  </main>
+</body>
+</html>

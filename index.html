@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <meta name="description" content="滑锦尧的个人主页 - 智能医学工程（脑机接口）· 天津大学与香港理工大学双校本科生">
   <title>滑锦尧 | 个人主页</title>
 
@@ -202,12 +203,13 @@
           <span class="chip" data-i18n="projects.p1.chip2">推荐模型</span>
         </article>
         <article class="card project-card">
-          <h3 data-i18n="projects.p2.title">个人主页 V4</h3>
-          <p data-i18n="projects.p2.desc">深色科技风 + 双校身份 + Digital Twin。</p>
+          <h3 data-i18n="projects.p2.title">个人主页 V5（期末版）</h3>
+          <p data-i18n="projects.p2.desc">深色科技风 + 双校身份 + 接入 DeepSeek 的数字分身。</p>
           <ul class="project-detail">
-            <li data-i18n="projects.p2.role"><strong>我的角色：</strong>独立完成从 V1 到 V4 的全部迭代</li>
+            <li data-i18n="projects.p2.role"><strong>我的角色：</strong>独立完成从 V1 到 V5 的全部迭代</li>
             <li data-i18n="projects.p2.stack"><strong>技术栈：</strong>HTML/CSS/原生 JS + Canvas + Web Audio API</li>
-            <li data-i18n="projects.p2.deploy"><strong>发布：</strong>GitHub Pages 静态托管</li>
+            <li data-i18n="projects.p2.twin"><strong>数字分身：</strong>DeepSeek deepseek-chat + Cloudflare Workers 后端</li>
+            <li data-i18n="projects.p2.deploy"><strong>发布：</strong>GitHub Pages 静态托管 + Workers 接口</li>
           </ul>
           <span class="chip">HTML/CSS/JS</span>
         </article>
@@ -263,13 +265,13 @@
     <section class="section reveal" id="notes">
       <h2 class="section-title" data-i18n="notes.title">学习笔记</h2>
       <div class="card-grid">
-        <a href="notes/2026-09-01-vibe-coding.html" class="card">
-          <h3>Vibe Coding 入门</h3>
-          <p>2026-09-01 · 学习笔记</p>
+        <a href="notes/vibe-coding-v1-to-v4.html" class="card">
+          <h3 data-i18n="notes.n1.title">从 V1 到 V4：迭代复盘</h3>
+          <p data-i18n="notes.n1.desc">2026-10 · 每版改了什么、为什么改、哪些 AI 建议被否决</p>
         </a>
-        <a href="notes/2026-09-15-brain-computer-interface.html" class="card">
-          <h3>脑机接口基础</h3>
-          <p>2026-09-15 · 学习笔记</p>
+        <a href="notes/digital-twin.html" class="card">
+          <h3 data-i18n="notes.n2.title">数字分身是怎么做成的</h3>
+          <p data-i18n="notes.n2.desc">2026-11 · 知识库、提示词、流式后端与测试</p>
         </a>
       </div>
     </section>
@@ -284,27 +286,30 @@
     </section>
 
     <section class="section reveal" id="twin">
-      <h2 class="section-title" data-i18n="twin.title">和我聊聊</h2>
-      <p class="section-desc" data-i18n="twin.desc">这是基于我的个人知识库的对话入口，你可以问我关于我的专业、项目、兴趣等问题。</p>
+      <h2 class="section-title" data-i18n="twin.title">数字分身</h2>
+      <p class="section-desc" data-i18n="twin.desc">这不是提前写好的关键词问答：它接入了 DeepSeek 大模型，会基于我的个人资料现场组织回答——资料里的任何细节都可以问，没预设过的问题也能答。</p>
 
       <div class="twin-container">
-        <div class="twin-messages" id="twinMessages" aria-live="polite">
-          <div class="twin-bubble twin-bot" data-i18n="twin.intro">
-            你好，我是滑锦尧的数字分身。你可以问我：<br>· 你的专业是什么？<br>· 你在做什么项目？<br>· 你的兴趣爱好有哪些？<br>· 怎么联系你？
-          </div>
+        <div class="twin-toolbar">
+          <span class="twin-status">
+            <span class="twin-dot" id="twinDot" aria-hidden="true"></span>
+            <span id="twinStatus" data-i18n="twin.status">数字分身 · DeepSeek</span>
+          </span>
+          <button class="twin-mini-btn" id="twinReset" type="button" data-i18n="twin.reset">新对话</button>
         </div>
 
-        <div class="twin-suggestions" id="twinSuggestions">
-          <button class="twin-chip" data-q="你的专业是什么" data-i18n="twin.chip1" type="button">你的专业是什么？</button>
-          <button class="twin-chip" data-q="你在做什么项目" data-i18n="twin.chip2" type="button">你在做什么项目？</button>
-          <button class="twin-chip" data-q="你的兴趣爱好" data-i18n="twin.chip3" type="button">你的兴趣爱好？</button>
-          <button class="twin-chip" data-q="怎么联系你" data-i18n="twin.chip4" type="button">怎么联系你？</button>
-        </div>
+        <div class="twin-messages" id="twinMessages" role="log" aria-live="polite" aria-relevant="additions text" aria-label="与数字分身的对话"></div>
+
+        <div class="twin-suggestions" id="twinSuggestions"></div>
 
         <form class="twin-input" id="twinForm">
-          <input type="text" id="twinInput" placeholder="输入你的问题..." autocomplete="off">
-          <button type="submit" class="btn btn-primary" data-i18n="twin.send">发送</button>
+          <label class="sr-only" for="twinInput" data-i18n="twin.label">你的问题</label>
+          <input type="text" id="twinInput" placeholder="输入你的问题..." maxlength="300" required autocomplete="off">
+          <button type="submit" class="btn btn-primary" id="twinSend" data-i18n="twin.send">发送</button>
+          <button type="button" class="btn btn-ghost twin-stop" id="twinStop" hidden data-i18n="twin.stop">停止</button>
         </form>
+
+        <p class="twin-footnote" data-i18n="twin.note">回答由 DeepSeek 模型基于我的个人资料实时生成，可能有误；重要事情请直接邮件联系我。</p>
       </div>
     </section>
 
@@ -354,6 +359,7 @@
 
   <audio id="bgMusic" preload="none"></audio>
 
+  <script src="twin-config.js"></script>
   <script src="script.js" defer></script>
   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </body>
