@@ -135,7 +135,7 @@ server.listen(PORT, '127.0.0.1', () => {
   console.log(`\n  数字分身本地服务已启动`);
   console.log(`  站点   http://127.0.0.1:${PORT}/`);
   console.log(`  健康   http://127.0.0.1:${PORT}/api/health`);
-  console.log(`  模型   ${env.DEEPSEEK_MODEL || 'deepseek-chat'}`);
+  console.log(`  模型   ${env.DEEPSEEK_MODEL || 'deepseek-flash'}`);
   console.log(`  Key    ${hasKey ? '已配置 ✅' : '未配置 ❌（对话会返回 503）'}`);
   console.log(`  上游   ${env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com'}\n`);
 });

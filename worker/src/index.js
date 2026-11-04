@@ -18,11 +18,11 @@ import { buildSystemPrompt, SUGGESTED_QUESTIONS } from './knowledge.js';
 
 const DEFAULTS = {
   DEEPSEEK_BASE_URL: 'https://api.deepseek.com',
-  DEEPSEEK_MODEL: 'deepseek-chat',
+  DEEPSEEK_MODEL: 'deepseek-flash',
   TEMPERATURE: '0.6',
   MAX_TOKENS: '700',
   HISTORY_TURNS: '8',
-  RATE_LIMIT: '20', // 每个 IP 每窗口的请求数
+  RATE_LIMIT: '30', // 每个 IP 每窗口的请求数
   RATE_WINDOW_MS: '600000', // 10 分钟
   ALLOWED_ORIGINS:
     'https://huajinyao.github.io,http://localhost:5500,http://127.0.0.1:5500,http://localhost:5501,http://127.0.0.1:5501,http://localhost:8080,http://127.0.0.1:8080',
@@ -147,7 +147,7 @@ function buildUpstreamBody(env, messages) {
 }
 
 /** 把 OpenAI 兼容的 SSE 转成前端用的极简协议：data: {"d":"..."} */
-function toClientStream(upstream) {
+function toClientStream(upstream, model) {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
 
@@ -193,11 +193,16 @@ function toClientStream(upstream) {
           }
         }
 
-        send({ done: true, model: 'deepseek-chat' });
+        send({ done: true, model });
         controller.close();
       } catch (err) {
-        send({ error: 'stream_broken', message: '回答中断了，请重试' });
-        controller.close();
+        // 客户端可能已经断开，这里的 enqueue 也可能失败，所以双重保护
+        try {
+          send({ error: 'stream_broken', message: '回答中断了，请重试' });
+        } catch (e) {}
+        try {
+          controller.close();
+        } catch (e) {}
       } finally {
         try {
           reader.releaseLock();
@@ -304,7 +309,7 @@ async function handleChat(request, env, ctx) {
     });
   }
 
-  const res = new Response(toClientStream(upstream), {
+  const res = new Response(toClientStream(upstream, conf(env, 'DEEPSEEK_MODEL')), {
     status: 200,
     headers: {
       ...cors,

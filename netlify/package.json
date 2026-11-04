@@ -1,0 +1,7 @@
+{
+  "name": "huajinyao-twin-netlify",
+  "private": true,
+  "dependencies": {
+    "netlify-cli": "^26.2.0"
+  }
+}

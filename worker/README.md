@@ -20,7 +20,7 @@ worker/
 1. 打开 <https://platform.deepseek.com/>
 2. 注册 / 登录 → 左侧「API keys」→ 创建
 3. 复制 `sk-` 开头的 Key（只显示一次）
-4. 账户里充一点点钱即可（`deepseek-chat` 很便宜，课程演示几块钱够用很久）
+4. 账户里充一点点钱即可（`deepseek-flash` 很便宜，课程演示几块钱够用很久）
 
 > 如果国内访问 `platform.deepseek.com` 有困难，报告里需要注明所用的网络环境。
 
@@ -72,7 +72,7 @@ https://huajinyao-digital-twin.<你的子域>.workers.dev
 
 ```bash
 curl https://huajinyao-digital-twin.<你的子域>.workers.dev/api/health
-# {"ok":true,"model":"deepseek-chat","keyConfigured":true,...}
+# {"ok":true,"model":"deepseek-flash","keyConfigured":true,...}
 ```
 
 ## 四、把地址告诉前端
@@ -100,7 +100,7 @@ GitHub Pages 会自动重新发布，一两分钟后主页上的分身就能真�
 | --- | --- |
 | 改分身的人设 / 知识库 | 改 `src/knowledge.js`，再 `npx wrangler deploy` |
 | 换模型 | 改 `wrangler.toml` 里的 `DEEPSEEK_MODEL`（如 `deepseek-reasoner`） |
-| 收紧限流 | 改 `wrangler.toml` 的 `RATE_LIMIT`（默认 20 次 / 10 分钟 / IP） |
+| 收紧限流 | 改 `wrangler.toml` 的 `RATE_LIMIT`（默认 30 次 / 10 分钟 / IP） |
 | 看实时日志 | `npx wrangler tail` |
 | 换 Key | 再执行一次 `npx wrangler secret put DEEPSEEK_API_KEY` |
 

@@ -10,4 +10,4 @@
  *
  * 这个文件里只放公开地址，不要写任何 API Key。
  */
-window.TWIN_API_BASE = '';
+window.TWIN_API_BASE = 'https://huajinyao-digital-twin.netlify.app';

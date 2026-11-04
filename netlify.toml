@@ -1,0 +1,12 @@
+# Netlify 部署配置：只托管数字分身的后端函数
+[build]
+  publish = "netlify/public"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-store"

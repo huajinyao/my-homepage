@@ -8,3 +8,20 @@ node_modules/
 .DS_Store
 verify-report.md
 worker/verify-report.md
+
+# wrangler 本地凭据目录
+.wrangler-home/
+
+# Cloudflare API Token（本机部署用）
+.cf-token
+
+# Netlify
+netlify/node_modules/
+netlify/.npmcache/
+.netlify/
+.netlify-token
+netlify/.home/
+
+# 期末报告（本地交付物，不随站点发布）
+report/
+Jinyao Hua_Personal Homepage Final Version.pdf

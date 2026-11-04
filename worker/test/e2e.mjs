@@ -8,10 +8,11 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const WORKER_DIR = new URL('..', import.meta.url).pathname;
-const MOCK_PORT = 8790;
-const MAIN_PORT = 8787;
-const RL_PORT = 8788;
-const NOKEY_PORT = 8789;
+// 用独立端口段，避免和本地手动起的 npm run dev 抢端口
+const MOCK_PORT = 8890;
+const MAIN_PORT = 8887;
+const RL_PORT = 8888;
+const NOKEY_PORT = 8889;
 const LOG = '/tmp/mock-deepseek-requests.jsonl';
 
 const procs = [];
@@ -134,11 +135,16 @@ await test('对话以 SSE 流式返回，且能拼回完整回答', async () => 
   });
   assert.equal(r.status, 200);
   assert.match(r.headers.get('content-type'), /text\/event-stream/);
-  const { text, done } = await readStream(r);
+  const { text, done, raw } = await readStream(r);
   assert.ok(text.length > 10, '回答内容太短');
   assert.match(text, /你的专业是什么/);
   assert.equal(done, true);
   assert.ok(!text.includes('思考过程'), 'reasoning_content 不该泄漏到正文');
+  // 流必须以 done 结尾，不能出现 error 事件（回归：env 未定义曾导致 stream_broken）
+  assert.equal(raw.filter((o) => o.error).length, 0, '不应出现 error 事件');
+  const last = raw[raw.length - 1];
+  assert.equal(last.done, true);
+  assert.ok(last.model, 'done 事件应带模型名');
 });
 
 await test('system prompt 含知识库与防注入规则，且排在最前', async () => {

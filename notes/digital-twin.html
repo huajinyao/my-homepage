@@ -34,7 +34,7 @@
 
       <h2>为什么不能直接在前端调 API</h2>
       <p>最省事的写法是在 <code>script.js</code> 里 <code>fetch('https://api.deepseek.com/chat/completions')</code>，把 Key 写在前端。但这意味着任何人按 F12 就能拿走我的 Key，拿去刷我的余额。个人主页是公开的静态站点，这等于把银行卡贴在门上。</p>
-      <p>所以要加一层后端：浏览器只跟我的 Worker 说话，Key 只存在 Worker 的服务端环境变量里。</p>
+      <p>所以要加一层后端：浏览器只跟我的函数说话，Key 只存在云平台的服务端环境变量里。</p>
 
       <h2>整体结构</h2>
       <table class="note-table">
@@ -42,8 +42,8 @@
         <tbody>
           <tr><td>前端页面</td><td>原生 HTML / CSS / JS</td><td>对话界面、SSE 流式渲染、多轮上下文、错误提示</td></tr>
           <tr><td>静态托管</td><td>GitHub Pages</td><td>托管整个站点</td></tr>
-          <tr><td>后端代理</td><td>Cloudflare Workers</td><td>藏 Key、拼提示词、限流、输入校验、转发流式响应</td></tr>
-          <tr><td>模型</td><td>DeepSeek（深度求索）deepseek-chat</td><td>基于知识库生成回答</td></tr>
+          <tr><td>后端代理</td><td>Netlify Functions</td><td>藏 Key、拼提示词、限流、输入校验、转发流式响应</td></tr>
+          <tr><td>模型</td><td>DeepSeek（深度求索）DeepSeek-V4.1-Flash（<code>deepseek-flash</code>）</td><td>基于知识库生成回答</td></tr>
         </tbody>
       </table>
 

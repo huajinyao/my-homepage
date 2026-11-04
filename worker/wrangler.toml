@@ -6,12 +6,12 @@ compatibility_date = "2025-06-01"
 
 # 运行时变量（非密）
 [vars]
-DEEPSEEK_MODEL = "deepseek-chat"
+DEEPSEEK_MODEL = "deepseek-flash"
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 TEMPERATURE = "0.6"
 MAX_TOKENS = "700"
 HISTORY_TURNS = "8"
-RATE_LIMIT = "20"
+RATE_LIMIT = "30"
 RATE_WINDOW_MS = "600000"
 
 # 只允许你自己的站点调用，别的网站没法拿你的额度
