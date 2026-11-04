@@ -111,3 +111,17 @@ node verify-live.mjs https://huajinyao-digital-twin.netlify.app   # 10 题真实
 | 返回「问得有点快」 | 触发限流（30 次/10 分钟/IP） | 等一会儿，或调 `RATE_LIMIT` |
 | 页面变成 Netlify 登录页 | 站点被设成 Private | Site settings → Access control 里关掉 SSO 保护 |
 | 回答里提到旧平台 | 知识库没更新 | 改 `worker/src/knowledge.js` 后重新部署 |
+
+## 发版时记得改版本号（很重要）
+
+浏览器会缓存 `style.css` / `script.js`。如果只改了这两个文件而不改文件名，访客（包括老师）可能还在用旧缓存，表现就是"我这边明明改好了，对方打开还是老样子"。
+
+做法：推送前把 HTML 里的 `?v=` 统一换成新的值，例如：
+
+```bash
+# 例：把 20261104c 换成 20261105a
+grep -rl 'v=20261104c' index.html diag.html notes/*.html \
+  | xargs sed -i '' 's/v=20261104c/v=20261105a/g'
+```
+
+涉及文件：`index.html`、`diag.html`、`notes/*.html`。
