@@ -16,6 +16,7 @@ const DEFAULTS = {
   TEMPERATURE: '0.6',
   MAX_TOKENS: '700',
   HISTORY_TURNS: '8',
+  UPSTREAM_TIMEOUT_MS: '25000',
   RATE_LIMIT: '30',
   RATE_WINDOW_MS: '600000',
   ALLOWED_ORIGINS:
@@ -61,10 +62,26 @@ export default async function handler(request, context) {
     body: ['GET', 'HEAD'].includes(request.method) ? undefined : await request.arrayBuffer(),
   });
 
-  return worker.fetch(req, env, {
-    waitUntil: (p) => (context?.waitUntil ? context.waitUntil(p) : Promise.resolve()),
-    passThroughOnException: () => {},
-  });
+  try {
+    return await worker.fetch(req, env, {
+      waitUntil: (p) => (context?.waitUntil ? context.waitUntil(p) : Promise.resolve()),
+      passThroughOnException: () => {},
+    });
+  } catch (err) {
+    // 兜底：任何未捕获异常也返回带 CORS 的 JSON，避免浏览器把它当成"网络错误"
+    const origin = request.headers.get('origin') || '';
+    return new Response(
+      JSON.stringify({ error: 'function_crash', message: '服务出错了，请稍后再试' }),
+      {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Access-Control-Allow-Origin': origin || '*',
+          'Vary': 'Origin',
+        },
+      }
+    );
+  }
 }
 
 export const config = {

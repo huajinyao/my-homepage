@@ -22,6 +22,7 @@ const DEFAULTS = {
   TEMPERATURE: '0.6',
   MAX_TOKENS: '700',
   HISTORY_TURNS: '8',
+  UPSTREAM_TIMEOUT_MS: '25000',
   RATE_LIMIT: '30', // 每个 IP 每窗口的请求数
   RATE_WINDOW_MS: '600000', // 10 分钟
   ALLOWED_ORIGINS:
@@ -274,6 +275,9 @@ async function handleChat(request, env, ctx) {
 
   let upstream;
   const startedAt = Date.now();
+  const timeoutMs = Number(conf(env, 'UPSTREAM_TIMEOUT_MS')) || 25000;
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), timeoutMs);
   try {
     upstream = await fetch(endpoint, {
       method: 'POST',
@@ -282,14 +286,20 @@ async function handleChat(request, env, ctx) {
         Authorization: `Bearer ${env.DEEPSEEK_API_KEY}`,
       },
       body: JSON.stringify(body),
+      signal: ac.signal,
     });
   } catch (err) {
+    clearTimeout(timer);
+    const aborted = err && (err.name === 'AbortError' || err.name === 'TimeoutError');
     return json(
-      { error: 'upstream_unreachable', message: '模型服务连不上，请稍后再试' },
-      502,
+      aborted
+        ? { error: 'upstream_timeout', message: '模型这次回得太慢，请再问一次' }
+        : { error: 'upstream_unreachable', message: '模型服务连不上，请稍后再试' },
+      aborted ? 504 : 502,
       { ...cors, ...rlHeaders }
     );
   }
+  clearTimeout(timer);
 
   if (!upstream.ok) {
     let detail = '';
@@ -333,8 +343,21 @@ async function handleChat(request, env, ctx) {
 
 export default {
   async fetch(request, env, ctx) {
-    const url = new URL(request.url);
     const cors = corsHeaders(request, env);
+    try {
+      return await route(request, env, ctx, cors);
+    } catch (err) {
+      return json(
+        { error: 'internal', message: '服务内部出错了，请稍后再试' },
+        500,
+        cors
+      );
+    }
+  },
+};
+
+async function route(request, env, ctx, cors) {
+    const url = new URL(request.url);
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: cors });
@@ -359,9 +382,8 @@ export default {
       if (request.method !== 'POST') {
         return json({ error: 'method_not_allowed' }, 405, cors);
       }
-      return handleChat(request, env, ctx);
+      return await handleChat(request, env, ctx);
     }
 
     return json({ error: 'not_found', message: '接口不存在' }, 404, cors);
-  },
-};
+}

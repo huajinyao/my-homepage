@@ -338,6 +338,16 @@
 
         <div class="twin-suggestions" id="twinSuggestions"></div>
 
+        <div class="twin-voice" id="twinVoice" hidden>
+          <span class="twin-voice-dot" aria-hidden="true"></span>
+          <span class="twin-voice-text" id="twinVoiceText">正在聆听…</span>
+          <span class="twin-voice-time" id="twinVoiceTime">0s</span>
+          <span class="twin-voice-actions">
+            <button type="button" id="twinVoiceCancel" data-i18n="twin.voiceCancel">取消</button>
+            <button type="button" id="twinVoiceDone" class="is-primary" data-i18n="twin.voiceDone">结束并发送</button>
+          </span>
+        </div>
+
         <form class="twin-input" id="twinForm">
           <label class="sr-only" for="twinInput" data-i18n="twin.label">你的问题</label>
           <input type="text" id="twinInput" placeholder="输入你的问题..." maxlength="300" required autocomplete="off">

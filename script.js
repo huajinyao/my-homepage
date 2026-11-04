@@ -755,7 +755,11 @@ safeRun('lang', function () {
       'palette.theme': '切换主题', 'palette.lang': '切换语言', 'palette.newChat': '数字分身：新对话',
       'palette.copy': '复制邮箱', 'palette.top': '回到顶部',
       'contact.copy': '复制邮箱', 'contact.copied': '邮箱已复制',
-      'twin.mic': '语音输入', 'twin.micStop': '点击停止录音',
+      'twin.mic': '语音输入', 'twin.micStop': '结束并发送',
+      'twin.listening': '正在聆听…说完会自动发送',
+      'twin.voiceCancel': '取消', 'twin.voiceDone': '结束并发送',
+      'twin.retrying': '网络不稳，正在重试…',
+      'twin.err.networkHost': '连不上后端（{host}）。可能是当前网络限制了这个域名，换 4G/5G 或换个浏览器再试。',
       'twin.micDenied': '麦克风权限被拒绝，请在浏览器里允许麦克风后重试',
       'twin.micNetwork': '语音服务连不上：Chrome 的语音识别走 Google，国内常被拦截。建议改用 Edge 或 Safari，或直接键盘输入',
       'twin.micNoSpeech': '没听清，再说一次试试', 'twin.micGeneric': '语音识别出错了，请改用键盘输入',
@@ -853,7 +857,11 @@ safeRun('lang', function () {
       'palette.theme': 'Toggle theme', 'palette.lang': 'Toggle language', 'palette.newChat': 'Digital twin: new chat',
       'palette.copy': 'Copy email', 'palette.top': 'Back to top',
       'contact.copy': 'Copy email', 'contact.copied': 'Email copied',
-      'twin.mic': 'Voice input', 'twin.micStop': 'Click to stop',
+      'twin.mic': 'Voice input', 'twin.micStop': 'Finish and send',
+      'twin.listening': 'Listening… it sends automatically when you pause',
+      'twin.voiceCancel': 'Cancel', 'twin.voiceDone': 'Finish and send',
+      'twin.retrying': 'Network hiccup — retrying…',
+      'twin.err.networkHost': 'Cannot reach the backend ({host}). Your network may block this domain — try mobile data or another browser.',
       'twin.micDenied': 'Microphone permission denied. Allow it in the browser and retry.',
       'twin.micNetwork': 'Speech service unreachable (Chrome relies on Google). Try Edge or Safari, or just type.',
       'twin.micNoSpeech': "Didn't catch that — try again", 'twin.micGeneric': 'Speech recognition failed. Please type instead.',
@@ -1102,7 +1110,9 @@ safeRun('twin', function () {
     }
     if (code === 'invalid' && err.message) return err.message;
     if ((err && err.name === 'TypeError') || !navigator.onLine) {
-      return t('twin.err.network', '网络好像不太稳，检查一下连接再试。');
+      const host = API_BASE ? API_BASE.replace(/^https?:\/\//, '') : location.host;
+      const tpl = t('twin.err.networkHost', '连不上后端（{host}）。可能是当前网络限制了该域名，换 4G/5G 或换个浏览器再试。');
+      return tpl.replace('{host}', host);
     }
     return t('twin.err.server', '模型服务暂时不可用，稍后再试。');
   }
@@ -1126,15 +1136,33 @@ safeRun('twin', function () {
     state.controller = controller;
 
     try {
-      const res = await fetch(API_BASE + '/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: state.history.slice(-MAX_SEND),
-          lang: curLang()
-        }),
-        signal: controller.signal
+      // 网络层失败自动重试：国内访问 netlify.app 偶尔会瞬断，重试往往能救回来
+      const payload = JSON.stringify({
+        messages: state.history.slice(-MAX_SEND),
+        lang: curLang()
       });
+      let res = null;
+      let netErr = null;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          res = await fetch(API_BASE + '/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: payload,
+            signal: controller.signal
+          });
+          netErr = null;
+          break;
+        } catch (e) {
+          if (e && e.name === 'AbortError') throw e;
+          netErr = e;
+          if (attempt < 2) {
+            setStatus('busy', t('twin.retrying', '网络不稳，正在重试…'));
+            await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+          }
+        }
+      }
+      if (!res) throw netErr || new TypeError('network');
 
       if (!res.ok) {
         let detail = null;
@@ -1284,11 +1312,18 @@ safeRun('twin', function () {
     const micBtn = document.getElementById('twinMic');
     if (!micBtn) return;
 
+    const bar = document.getElementById('twinVoice');
+    const barText = document.getElementById('twinVoiceText');
+    const barTime = document.getElementById('twinVoiceTime');
+    const btnCancel = document.getElementById('twinVoiceCancel');
+    const btnDone = document.getElementById('twinVoiceDone');
+
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     const d = () => (window.__i18n && window.__i18n.dict()) || {};
 
     if (!SR) {
-      micBtn.hidden = true;           // 浏览器不支持就完全不显示，避免误导
+      micBtn.hidden = true;
+      if (bar) bar.hidden = true;
       return;
     }
     micBtn.hidden = false;
@@ -1296,18 +1331,33 @@ safeRun('twin', function () {
     let rec = null;
     let listening = false;
     let finalText = '';
-    let submitted = false;
+    let submitAfterStop = false;
+    let tick = null;
+    let startedAt = 0;
+
+    function toast(msg) {
+      if (window.__toast) window.__toast(msg);
+    }
 
     function setListening(on) {
       listening = on;
       micBtn.classList.toggle('listening', on);
       micBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-      micBtn.title = on ? (d()['twin.micStop'] || '停止录音') : (d()['twin.mic'] || '语音输入');
-      input.disabled = false;
-    }
-
-    function toast(msg) {
-      if (window.__toast) window.__toast(msg);
+      micBtn.title = on ? (d()['twin.micStop'] || '结束并发送') : (d()['twin.mic'] || '语音输入');
+      if (bar) bar.hidden = !on;
+      if (on) {
+        startedAt = Date.now();
+        if (barText) barText.textContent = d()['twin.listening'] || '正在聆听…';
+        clearInterval(tick);
+        tick = setInterval(() => {
+          const sec = Math.floor((Date.now() - startedAt) / 1000);
+          if (barTime) barTime.textContent = sec + 's';
+          if (sec >= 15) stop(true);   // 防止一直挂着
+        }, 200);
+      } else {
+        clearInterval(tick);
+        tick = null;
+      }
     }
 
     function errorText(code) {
@@ -1325,19 +1375,17 @@ safeRun('twin', function () {
     }
 
     function start() {
-      if (state.busy) return;
-      try {
-        rec = new SR();
-      } catch (e) {
-        return;
-      }
+      if (state.busy || listening) return;
+      try { rec = new SR(); } catch (e) { return; }
+
       rec.lang = curLang() === 'en' ? 'en-US' : 'zh-CN';
       rec.interimResults = true;
       rec.continuous = false;
       rec.maxAlternatives = 1;
 
       finalText = '';
-      submitted = false;
+      submitAfterStop = false;
+      input.value = '';
 
       rec.onstart = () => setListening(true);
 
@@ -1349,50 +1397,51 @@ safeRun('twin', function () {
           else interim += r[0].transcript;
         }
         input.value = (finalText + interim).trim();
-        if (finalText) {
-          // 说话结束，自动发送
-          submitted = true;
-          try { rec.stop(); } catch (err) {}
-          setTimeout(() => {
-            if (input.value.trim()) form.requestSubmit();
-          }, 180);
-        }
+        if (finalText) submitAfterStop = true;   // 说话结束 → 自动发送
       };
 
       rec.onerror = (e) => {
-        setListening(false);
         if (e.error !== 'aborted') toast(errorText(e.error));
+        submitAfterStop = false;
+        setListening(false);
       };
 
       rec.onend = () => {
         setListening(false);
         rec = null;
-        if (!submitted && !finalText) input.value = '';
+        if (submitAfterStop && input.value.trim()) {
+          setTimeout(() => form.requestSubmit(), 120);
+        }
       };
 
-      try {
-        rec.start();
-      } catch (e) {
-        setListening(false);
+      try { rec.start(); } catch (e) { setListening(false); }
+    }
+
+    // send=true：结束并发送（有文字时）；send=false：取消
+    function stop(send) {
+      submitAfterStop = !!send;
+      if (rec) { try { rec.stop(); } catch (e) {} }
+      else setListening(false);
+      if (!send) {
+        input.value = '';
+        finalText = '';
       }
     }
 
-    function stop() {
-      if (rec) { try { rec.stop(); } catch (e) {} }
-      setListening(false);
-    }
-
     micBtn.addEventListener('click', () => {
-      if (listening) stop(); else start();
+      if (listening) stop(true); else start();
     });
 
-    // Esc 取消录音
+    if (btnCancel) btnCancel.addEventListener('click', () => stop(false));
+    if (btnDone) btnDone.addEventListener('click', () => stop(true));
+
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && listening) { submitted = true; stop(); }
+      if (e.key === 'Escape' && listening) stop(false);
     });
 
     window.__twinMicLangChanged = () => {
-      if (!listening) micBtn.title = d()['twin.mic'] || '语音输入';
+      if (listening && barText) barText.textContent = d()['twin.listening'] || '正在聆听…';
+      else micBtn.title = d()['twin.mic'] || '语音输入';
     };
   })();
 

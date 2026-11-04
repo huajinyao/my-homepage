@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数字分身连接诊断</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { padding: 2rem 1rem; }
+    .diag { max-width: 720px; margin: 0 auto; }
+    .diag h1 { font-size: 1.3rem; margin-bottom: .4rem; color: var(--text-color); }
+    .diag .sub { color: var(--text-muted); font-size: .85rem; margin-bottom: 1.5rem; }
+    .row { display: flex; gap: .8rem; padding: .7rem 0; border-bottom: 1px solid var(--border-color); font-size: .88rem; }
+    .row .k { width: 9.5rem; color: var(--text-muted); flex: 0 0 auto; }
+    .row .v { flex: 1; word-break: break-all; }
+    .ok { color: #22d37a; } .bad { color: #ff4d6d; } .wait { color: var(--text-muted); }
+    pre { background: rgba(255,255,255,.04); border: 1px solid var(--border-color); border-radius: 8px;
+          padding: .8rem; font-size: .76rem; overflow-x: auto; white-space: pre-wrap; color: var(--text-muted); }
+    .hint { margin-top: 1.4rem; font-size: .84rem; line-height: 1.8; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <div class="diag">
+    <h1>数字分身连接诊断</h1>
+    <p class="sub">这个页面只做检测，不会保存任何东西。把结果截图发给我即可。</p>
+
+    <div class="row"><span class="k">后端地址</span><span class="v" id="base">—</span></div>
+    <div class="row"><span class="k">浏览器</span><span class="v" id="ua">—</span></div>
+    <div class="row"><span class="k">网络状态</span><span class="v" id="online">—</span></div>
+    <div class="row"><span class="k">健康检查</span><span class="v wait" id="health">检测中…</span></div>
+    <div class="row"><span class="k">真实提问</span><span class="v wait" id="chat">检测中…</span></div>
+
+    <pre id="detail">等待结果…</pre>
+
+    <p class="hint">
+      <b>怎么看结果：</b><br>
+      · 两项都绿 → 后端没问题，主页里报错多半是偶发，刷新再试即可。<br>
+      · 健康检查红、报 <code>Failed to fetch</code> → 你的网络到 <code>netlify.app</code> 不通，换 4G/5G 或换浏览器对比一下。<br>
+      · 健康检查绿、真实提问红 → 后端可达但模型响应异常，把 detail 发我。
+    </p>
+  </div>
+
+  <script src="twin-config.js"></script>
+  <script>
+    (function () {
+      const base = (window.TWIN_API_BASE || '').replace(/\/+$/, '');
+      const $ = (id) => document.getElementById(id);
+      const detail = [];
+
+      $('base').textContent = base || '(未配置)';
+      $('ua').textContent = navigator.userAgent;
+      $('online').innerHTML = navigator.onLine
+        ? '<span class="ok">在线</span>'
+        : '<span class="bad">离线</span>';
+
+      function mark(el, ok, text) {
+        el.className = 'v ' + (ok === null ? 'wait' : ok ? 'ok' : 'bad');
+        el.textContent = text;
+      }
+
+      function log(s) {
+        detail.push(s);
+        $('detail').textContent = detail.join('\n');
+      }
+
+      async function timed(label, fn) {
+        const t0 = performance.now();
+        try {
+          const r = await fn();
+          const ms = Math.round(performance.now() - t0);
+          return { ok: true, r, ms };
+        } catch (e) {
+          const ms = Math.round(performance.now() - t0);
+          return { ok: false, e, ms };
+        }
+      }
+
+      (async () => {
+        if (!base) {
+          mark($('health'), false, '未配置后端地址');
+          mark($('chat'), false, '跳过');
+          return;
+        }
+
+        const h = await timed('health', () =>
+          fetch(base + '/api/health', { cache: 'no-store' })
+        );
+        if (h.ok) {
+          const j = await h.r.json().catch(() => null);
+          mark($('health'), h.r.ok, `${h.r.status} · ${h.ms}ms · model=${j?.model || '?'}`);
+          log(`health: HTTP ${h.r.status}, ${h.ms}ms, body=${JSON.stringify(j).slice(0, 200)}`);
+        } else {
+          mark($('health'), false, `失败 · ${h.e?.name || 'Error'}: ${h.e?.message || ''}`);
+          log(`health: FAILED after ${h.ms}ms -> ${h.e}`);
+        }
+
+        const c = await timed('chat', () =>
+          fetch(base + '/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages: [{ role: 'user', content: '你好' }] }),
+          })
+        );
+        if (c.ok) {
+          const status = c.r.status;
+          const ct = c.r.headers.get('content-type') || '';
+          let preview = '';
+          try {
+            const txt = await c.r.text();
+            preview = txt.slice(0, 160);
+          } catch (e) {}
+          mark($('chat'), c.r.ok, `${status} · ${c.ms}ms · ${ct.split(';')[0]}`);
+          log(`chat: HTTP ${status}, ${c.ms}ms, content-type=${ct}\npreview: ${preview}`);
+        } else {
+          mark($('chat'), false, `失败 · ${c.e?.name || 'Error'}: ${c.e?.message || ''}`);
+          log(`chat: FAILED after ${c.ms}ms -> ${c.e}`);
+        }
+      })();
+    })();
+  </script>
+</body>
+</html>

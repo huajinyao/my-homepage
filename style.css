@@ -1505,3 +1505,53 @@ body.light-theme .paper-data { background: #f6f8fa; }
   50% { box-shadow: 0 0 0 8px rgba(255, 0, 110, 0); }
 }
 .twin-mic:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* 语音控制条 */
+.twin-voice {
+  display: flex; align-items: center; gap: 0.55rem;
+  margin-bottom: 0.65rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid rgba(255, 0, 110, 0.35);
+  background: rgba(255, 0, 110, 0.08);
+  border-radius: 10px;
+  font-size: 0.8rem;
+  color: var(--text-color);
+  animation: twinIn 0.25s ease both;
+}
+.twin-voice-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent-pink);
+  animation: micPulse 1.2s ease-in-out infinite;
+  flex: 0 0 auto;
+}
+.twin-voice-text { flex: 1; }
+.twin-voice-time {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  min-width: 2.2em; text-align: right;
+}
+.twin-voice-actions { display: flex; gap: 0.4rem; flex: 0 0 auto; }
+.twin-voice-actions button {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.74rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.twin-voice-actions button:hover { color: var(--text-color); border-color: var(--text-muted); }
+.twin-voice-actions button.is-primary {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+.twin-voice-actions button.is-primary:hover { background: rgba(0, 229, 255, 0.12); }
+
+@media (max-width: 480px) {
+  .twin-voice { flex-wrap: wrap; }
+  .twin-voice-text { flex: 1 1 100%; order: -1; }
+  .twin-voice-actions { margin-left: auto; }
+}
