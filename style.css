@@ -1480,3 +1480,28 @@ body.light-theme .paper-data { background: #f6f8fa; }
   -webkit-mask-image: linear-gradient(to bottom, #000 94%, transparent 100%);
   mask-image: linear-gradient(to bottom, #000 94%, transparent 100%);
 }
+
+/* 语音输入 */
+.twin-mic {
+  flex: 0 0 auto;
+  width: 42px; height: 42px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.twin-mic:hover { color: var(--primary-color); border-color: var(--primary-color); }
+.twin-mic.listening {
+  color: #fff;
+  border-color: var(--accent-pink);
+  background: rgba(255, 0, 110, 0.15);
+  animation: micPulse 1.2s ease-in-out infinite;
+}
+@keyframes micPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 0, 110, 0.45); }
+  50% { box-shadow: 0 0 0 8px rgba(255, 0, 110, 0); }
+}
+.twin-mic:disabled { opacity: 0.5; cursor: not-allowed; }

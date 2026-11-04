@@ -755,6 +755,10 @@ safeRun('lang', function () {
       'palette.theme': '切换主题', 'palette.lang': '切换语言', 'palette.newChat': '数字分身：新对话',
       'palette.copy': '复制邮箱', 'palette.top': '回到顶部',
       'contact.copy': '复制邮箱', 'contact.copied': '邮箱已复制',
+      'twin.mic': '语音输入', 'twin.micStop': '点击停止录音',
+      'twin.micDenied': '麦克风权限被拒绝，请在浏览器里允许麦克风后重试',
+      'twin.micNetwork': '语音服务连不上：Chrome 的语音识别走 Google，国内常被拦截。建议改用 Edge 或 Safari，或直接键盘输入',
+      'twin.micNoSpeech': '没听清，再说一次试试', 'twin.micGeneric': '语音识别出错了，请改用键盘输入',
       'music.tag.folk': '民谣', 'music.tag.jazz': '爵士', 'music.tag.country': '乡村',
       'music.tag.symphonic': '交响乐', 'music.tag.pop': '流行', 'music.tag.piano': '钢琴',
       'music.tag.light': '轻音乐',
@@ -849,6 +853,10 @@ safeRun('lang', function () {
       'palette.theme': 'Toggle theme', 'palette.lang': 'Toggle language', 'palette.newChat': 'Digital twin: new chat',
       'palette.copy': 'Copy email', 'palette.top': 'Back to top',
       'contact.copy': 'Copy email', 'contact.copied': 'Email copied',
+      'twin.mic': 'Voice input', 'twin.micStop': 'Click to stop',
+      'twin.micDenied': 'Microphone permission denied. Allow it in the browser and retry.',
+      'twin.micNetwork': 'Speech service unreachable (Chrome relies on Google). Try Edge or Safari, or just type.',
+      'twin.micNoSpeech': "Didn't catch that — try again", 'twin.micGeneric': 'Speech recognition failed. Please type instead.',
       'music.tag.folk': 'Folk', 'music.tag.jazz': 'Jazz', 'music.tag.country': 'Country',
       'music.tag.symphonic': 'Symphony', 'music.tag.pop': 'Pop', 'music.tag.piano': 'Piano',
       'music.tag.light': 'Easy Listening',
@@ -942,6 +950,7 @@ safeRun('lang', function () {
     }
 
     if (window.__twinLangChanged) window.__twinLangChanged();
+    if (window.__twinMicLangChanged) window.__twinMicLangChanged();
     if (window.__radarRedraw) window.__radarRedraw();
     if (window.__musicLangChanged) window.__musicLangChanged();
     if (window.__guestbookRender) window.__guestbookRender();
@@ -1269,6 +1278,123 @@ safeRun('twin', function () {
     }
     if (!state.busy) statusReady();
   };
+
+  /* ------------------------- 语音输入 ------------------------- */
+  (function initMic() {
+    const micBtn = document.getElementById('twinMic');
+    if (!micBtn) return;
+
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const d = () => (window.__i18n && window.__i18n.dict()) || {};
+
+    if (!SR) {
+      micBtn.hidden = true;           // 浏览器不支持就完全不显示，避免误导
+      return;
+    }
+    micBtn.hidden = false;
+
+    let rec = null;
+    let listening = false;
+    let finalText = '';
+    let submitted = false;
+
+    function setListening(on) {
+      listening = on;
+      micBtn.classList.toggle('listening', on);
+      micBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      micBtn.title = on ? (d()['twin.micStop'] || '停止录音') : (d()['twin.mic'] || '语音输入');
+      input.disabled = false;
+    }
+
+    function toast(msg) {
+      if (window.__toast) window.__toast(msg);
+    }
+
+    function errorText(code) {
+      const t = d();
+      if (code === 'not-allowed' || code === 'service-not-allowed') {
+        return t['twin.micDenied'] || '麦克风权限被拒绝，请在浏览器地址栏允许后重试';
+      }
+      if (code === 'network') {
+        return t['twin.micNetwork'] || '语音服务连不上，请改用键盘输入（Edge / Safari 通常可用）';
+      }
+      if (code === 'no-speech') {
+        return t['twin.micNoSpeech'] || '没听清，再说一次试试';
+      }
+      return t['twin.micGeneric'] || '语音识别出错了，请改用键盘输入';
+    }
+
+    function start() {
+      if (state.busy) return;
+      try {
+        rec = new SR();
+      } catch (e) {
+        return;
+      }
+      rec.lang = curLang() === 'en' ? 'en-US' : 'zh-CN';
+      rec.interimResults = true;
+      rec.continuous = false;
+      rec.maxAlternatives = 1;
+
+      finalText = '';
+      submitted = false;
+
+      rec.onstart = () => setListening(true);
+
+      rec.onresult = (e) => {
+        let interim = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          const r = e.results[i];
+          if (r.isFinal) finalText += r[0].transcript;
+          else interim += r[0].transcript;
+        }
+        input.value = (finalText + interim).trim();
+        if (finalText) {
+          // 说话结束，自动发送
+          submitted = true;
+          try { rec.stop(); } catch (err) {}
+          setTimeout(() => {
+            if (input.value.trim()) form.requestSubmit();
+          }, 180);
+        }
+      };
+
+      rec.onerror = (e) => {
+        setListening(false);
+        if (e.error !== 'aborted') toast(errorText(e.error));
+      };
+
+      rec.onend = () => {
+        setListening(false);
+        rec = null;
+        if (!submitted && !finalText) input.value = '';
+      };
+
+      try {
+        rec.start();
+      } catch (e) {
+        setListening(false);
+      }
+    }
+
+    function stop() {
+      if (rec) { try { rec.stop(); } catch (e) {} }
+      setListening(false);
+    }
+
+    micBtn.addEventListener('click', () => {
+      if (listening) stop(); else start();
+    });
+
+    // Esc 取消录音
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && listening) { submitted = true; stop(); }
+    });
+
+    window.__twinMicLangChanged = () => {
+      if (!listening) micBtn.title = d()['twin.mic'] || '语音输入';
+    };
+  })();
 
   /* ------------------------- 初始化 ------------------------- */
   renderChips();
