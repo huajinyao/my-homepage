@@ -240,27 +240,28 @@ safeRun('music', function () {
   const nowTitle = document.getElementById('musicNowTitle');
   if (!shelf || !audio || !toggle) return;
 
+  // tag 存的是 i18n 键，title 为中文名，en 为英文名
   const TRACKS = [
-    { file: 'Five hundred miles.mp3', title: 'Five hundred miles', tag: '民谣' },
-    { file: 'Fly me to the moon.mp3', title: 'Fly me to the moon', tag: '爵士' },
-    { file: 'Hotel California.mp3', title: 'Hotel California', tag: '乡村' },
-    { file: 'Yesterday once more.mp3', title: 'Yesterday once more', tag: '民谣' },
-    { file: '一步之遥.mp3', title: '一步之遥', tag: '交响乐' },
-    { file: '九月的故事.mp3', title: '九月的故事', tag: '流行' },
-    { file: '克罗地亚狂想曲.mp3', title: '克罗地亚狂想曲', tag: '钢琴' },
-    { file: '千与千寻.mp3', title: '千与千寻', tag: '轻音乐' },
-    { file: '卡农.mp3', title: '卡农', tag: '钢琴' },
-    { file: '城里的月光.mp3', title: '城里的月光', tag: '流行' },
-    { file: '天空之城.mp3', title: '天空之城', tag: '轻音乐' },
-    { file: '幻想即兴曲.mp3', title: '幻想即兴曲', tag: '钢琴' },
-    { file: '月亮代表我的心.mp3', title: '月亮代表我的心', tag: '流行' },
-    { file: '月光奏鸣曲.mp3', title: '月光奏鸣曲', tag: '钢琴' },
-    { file: '柠檬树.mp3', title: '柠檬树', tag: '流行' },
-    { file: '梁祝.mp3', title: '梁祝', tag: '钢琴' },
-    { file: '稻香.mp3', title: '稻香', tag: '流行' },
-    { file: '菊次郎的夏天.mp3', title: '菊次郎的夏天', tag: '钢琴' },
-    { file: '蓝色多瑙河.mp3', title: '蓝色多瑙河', tag: '交响乐' },
-    { file: '雪的梦幻.mp3', title: '雪的梦幻', tag: '轻音乐' }
+    { file: 'Five hundred miles.mp3', title: 'Five Hundred Miles', en: 'Five Hundred Miles', tag: 'folk' },
+    { file: 'Fly me to the moon.mp3', title: 'Fly Me to the Moon', en: 'Fly Me to the Moon', tag: 'jazz' },
+    { file: 'Hotel California.mp3', title: 'Hotel California', en: 'Hotel California', tag: 'country' },
+    { file: 'Yesterday once more.mp3', title: 'Yesterday Once More', en: 'Yesterday Once More', tag: 'folk' },
+    { file: '一步之遥.mp3', title: '一步之遥', en: 'Por una Cabeza', tag: 'symphonic' },
+    { file: '九月的故事.mp3', title: '九月的故事', en: 'Story of September', tag: 'pop' },
+    { file: '克罗地亚狂想曲.mp3', title: '克罗地亚狂想曲', en: 'Croatian Rhapsody', tag: 'piano' },
+    { file: '千与千寻.mp3', title: '千与千寻', en: 'Spirited Away', tag: 'light' },
+    { file: '卡农.mp3', title: '卡农', en: 'Canon in D', tag: 'piano' },
+    { file: '城里的月光.mp3', title: '城里的月光', en: 'Moonlight in the City', tag: 'pop' },
+    { file: '天空之城.mp3', title: '天空之城', en: 'Castle in the Sky', tag: 'light' },
+    { file: '幻想即兴曲.mp3', title: '幻想即兴曲', en: 'Fantaisie-Impromptu', tag: 'piano' },
+    { file: '月亮代表我的心.mp3', title: '月亮代表我的心', en: 'The Moon Represents My Heart', tag: 'pop' },
+    { file: '月光奏鸣曲.mp3', title: '月光奏鸣曲', en: 'Moonlight Sonata', tag: 'piano' },
+    { file: '柠檬树.mp3', title: '柠檬树', en: 'Lemon Tree', tag: 'pop' },
+    { file: '梁祝.mp3', title: '梁祝', en: 'Butterfly Lovers', tag: 'piano' },
+    { file: '稻香.mp3', title: '稻香', en: 'Rice Field', tag: 'pop' },
+    { file: '菊次郎的夏天.mp3', title: '菊次郎的夏天', en: 'Summer', tag: 'piano' },
+    { file: '蓝色多瑙河.mp3', title: '蓝色多瑙河', en: 'The Blue Danube', tag: 'symphonic' },
+    { file: '雪的梦幻.mp3', title: '雪的梦幻', en: 'Snow Dream', tag: 'light' }
   ];
 
   const MUSIC_DIR = 'music/';
@@ -320,9 +321,23 @@ safeRun('music', function () {
     draw();
   }
 
+  function dictOf() {
+    return (window.__i18n && window.__i18n.dict()) || {};
+  }
+  function langOf() {
+    return window.__i18n ? window.__i18n.currentLang() : 'zh';
+  }
+  function trackTitle(t) {
+    return langOf() === 'en' && t.en ? t.en : t.title;
+  }
+  function trackTag(t) {
+    const d = dictOf();
+    return d['music.tag.' + t.tag] || t.tag;
+  }
+
   function renderCards() {
     shelf.innerHTML = TRACKS.map((track, i) => `
-      <music-card data-title="${track.title}" data-tag="${track.tag}" data-index="${i}"></music-card>
+      <music-card data-title="${trackTitle(track)}" data-tag="${trackTag(track)}" data-index="${i}"></music-card>
     `).join('');
   }
 
@@ -333,7 +348,7 @@ safeRun('music', function () {
     });
     if (nowTitle) {
       if (currentIndex >= 0) {
-        nowTitle.textContent = TRACKS[currentIndex].title;
+        nowTitle.textContent = trackTitle(TRACKS[currentIndex]);
       } else {
         const noneText = window.__i18n && window.__i18n.dict()['player.none']
           ? window.__i18n.dict()['player.none']
@@ -398,6 +413,7 @@ safeRun('music', function () {
   });
 
   window.__musicUpdateUI = updateUI;
+  window.__musicLangChanged = function () { renderCards(); updateUI(); };
   renderCards();
   updateUI();
 });
@@ -730,6 +746,18 @@ safeRun('lang', function () {
       'interests.sport.title': '运动', 'interests.sport.desc': '喜爱跑步，享受在运动中保持节奏与耐力。',
       'interests.other.title': '其他', 'interests.other.desc': '热爱音乐与舞蹈艺术。',
       'radar.title': '技能分布',
+      'radar.programming': '编程', 'radar.math': '数学', 'radar.music': '音乐',
+      'radar.calligraphy': '书法', 'radar.running': '跑步', 'radar.english': '英语',
+      'stats.music': '首音乐收藏', 'stats.skills': '项技能维度',
+      'stats.versions': '个主页版本', 'stats.twin': '个 AI 分身',
+      'palette.placeholder': '搜索区块或执行命令…', 'palette.nav': '选择', 'palette.run': '执行',
+      'palette.empty': '没有匹配项', 'palette.goto': '跳转', 'palette.action': '命令',
+      'palette.theme': '切换主题', 'palette.lang': '切换语言', 'palette.newChat': '数字分身：新对话',
+      'palette.copy': '复制邮箱', 'palette.top': '回到顶部',
+      'contact.copy': '复制邮箱', 'contact.copied': '邮箱已复制',
+      'music.tag.folk': '民谣', 'music.tag.jazz': '爵士', 'music.tag.country': '乡村',
+      'music.tag.symphonic': '交响乐', 'music.tag.pop': '流行', 'music.tag.piano': '钢琴',
+      'music.tag.light': '轻音乐',
       'projects.title': '项目与作品',
       'projects.p1.title': '数学建模课题', 'projects.p1.desc': '《基于实际场景需求的个性化背景音乐歌单推荐模型的研究》',
       'projects.p1.role': '我的角色：负责用户画像建模 + 推荐算法设计',
@@ -812,6 +840,18 @@ safeRun('lang', function () {
       'interests.sport.title': 'Sports', 'interests.sport.desc': 'Love running, enjoying rhythm and endurance.',
       'interests.other.title': 'Others', 'interests.other.desc': 'Love music and dance.',
       'radar.title': 'Skill Distribution',
+      'radar.programming': 'Coding', 'radar.math': 'Math', 'radar.music': 'Music',
+      'radar.calligraphy': 'Calligraphy', 'radar.running': 'Running', 'radar.english': 'English',
+      'stats.music': 'songs collected', 'stats.skills': 'skill dimensions',
+      'stats.versions': 'homepage versions', 'stats.twin': 'AI twin',
+      'palette.placeholder': 'Search sections or run a command…', 'palette.nav': 'select', 'palette.run': 'run',
+      'palette.empty': 'No matches', 'palette.goto': 'Go to', 'palette.action': 'Command',
+      'palette.theme': 'Toggle theme', 'palette.lang': 'Toggle language', 'palette.newChat': 'Digital twin: new chat',
+      'palette.copy': 'Copy email', 'palette.top': 'Back to top',
+      'contact.copy': 'Copy email', 'contact.copied': 'Email copied',
+      'music.tag.folk': 'Folk', 'music.tag.jazz': 'Jazz', 'music.tag.country': 'Country',
+      'music.tag.symphonic': 'Symphony', 'music.tag.pop': 'Pop', 'music.tag.piano': 'Piano',
+      'music.tag.light': 'Easy Listening',
       'projects.title': 'Projects & Works',
       'projects.p1.title': 'Mathematical Modeling Project', 'projects.p1.desc': '"Research on Personalized Background Music Playlist Recommendation Model Based on Real-world Needs"',
       'projects.p1.role': 'My role: user profiling + recommendation algorithm design',
@@ -878,6 +918,10 @@ safeRun('lang', function () {
       const key = el.dataset.i18n;
       if (dict[key]) el.innerHTML = dict[key];
     });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+      const key = el.dataset.i18nPh;
+      if (dict[key]) el.placeholder = dict[key];
+    });
 
     const guestNameInput = document.getElementById('guestName');
     const guestMsgInput = document.getElementById('guestMessage');
@@ -898,6 +942,8 @@ safeRun('lang', function () {
     }
 
     if (window.__twinLangChanged) window.__twinLangChanged();
+    if (window.__radarRedraw) window.__radarRedraw();
+    if (window.__musicLangChanged) window.__musicLangChanged();
     if (window.__guestbookRender) window.__guestbookRender();
     if (window.__musicUpdateUI) window.__musicUpdateUI();
     if (window.__runTyping) window.__runTyping();
@@ -1216,6 +1262,11 @@ safeRun('twin', function () {
 
   window.__twinLangChanged = function () {
     renderChips();
+    // 还没开始对话时，开场白立刻跟着语言换；已有对话则保留原文
+    if (!state.busy && state.history.length === 0) {
+      messagesEl.innerHTML = '';
+      renderIntro();
+    }
     if (!state.busy) statusReady();
   };
 
@@ -1308,10 +1359,15 @@ safeRun('radar', function () {
     const color = getColor();
     ctx.clearRect(0, 0, size, size);
 
+    const d = (window.__i18n && window.__i18n.dict()) || {};
+    const L = (k, fallback) => d[k] || fallback;
     const skills = [
-      { label: '编程', value: 0.75 }, { label: '数学', value: 0.7 },
-      { label: '音乐', value: 0.8 }, { label: '书法', value: 0.85 },
-      { label: '跑步', value: 0.7 }, { label: '英语', value: 0.65 }
+      { label: L('radar.programming', '编程'), value: 0.75 },
+      { label: L('radar.math', '数学'), value: 0.7 },
+      { label: L('radar.music', '音乐'), value: 0.8 },
+      { label: L('radar.calligraphy', '书法'), value: 0.85 },
+      { label: L('radar.running', '跑步'), value: 0.7 },
+      { label: L('radar.english', '英语'), value: 0.65 }
     ];
     const cx = size / 2, cy = size / 2;
     const radius = size * 0.35;
@@ -1356,9 +1412,303 @@ safeRun('radar', function () {
   }
 
   draw();
+  window.__radarRedraw = draw;
 
   const themeObserver = new MutationObserver(draw);
   themeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+});
+
+
+// ========================================
+// 数据条：进入视口时数字滚动
+// ========================================
+safeRun('stats', function () {
+  const nums = document.querySelectorAll('.stat-num');
+  if (!nums.length) return;
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const animate = (el) => {
+    const target = parseInt(el.dataset.count, 10) || 0;
+    if (reduce) { el.textContent = target; return; }
+    const dur = 1100;
+    const t0 = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased);
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) { animate(e.target); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.6 });
+  nums.forEach((el) => io.observe(el));
+});
+
+// ========================================
+// 滚动高亮当前区块
+// ========================================
+safeRun('scrollspy', function () {
+  const links = [...document.querySelectorAll('.nav-links a[href^="#"]')];
+  if (!links.length) return;
+  const map = new Map();
+  links.forEach((a) => {
+    const id = a.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (el) map.set(el, a);
+  });
+  if (!map.size) return;
+
+  const setActive = (a) => {
+    links.forEach((l) => l.classList.toggle('active', l === a));
+  };
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) setActive(map.get(e.target));
+    });
+  }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+  map.forEach((_, el) => io.observe(el));
+});
+
+// ========================================
+// 卡片 3D 倾斜
+// ========================================
+safeRun('tilt', function () {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  const cards = document.querySelectorAll('.card, .campus-card, .school-card');
+  const MAX = 7;
+
+  cards.forEach((card) => {
+    let raf = null;
+    card.addEventListener('pointermove', (e) => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = null;
+        const r = card.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        card.style.transform =
+          `perspective(900px) rotateX(${(-py * MAX).toFixed(2)}deg) rotateY(${(px * MAX).toFixed(2)}deg) translateY(-4px)`;
+      });
+    });
+    card.addEventListener('pointerleave', () => {
+      card.style.transform = '';
+    });
+  });
+});
+
+// ========================================
+// Toast
+// ========================================
+safeRun('toast', function () {
+  const el = document.getElementById('toast');
+  if (!el) return;
+  let timer = null;
+  window.__toast = function (msg) {
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(timer);
+    timer = setTimeout(() => el.classList.remove('show'), 2000);
+  };
+});
+
+// ========================================
+// 复制邮箱
+// ========================================
+safeRun('copyEmail', function () {
+  const btn = document.getElementById('copyEmail');
+  if (!btn) return;
+  const EMAIL = '2761163826@qq.com';
+  btn.addEventListener('click', async () => {
+    const d = (window.__i18n && window.__i18n.dict()) || {};
+    try {
+      await navigator.clipboard.writeText(EMAIL);
+      if (window.__toast) window.__toast(d['contact.copied'] || '邮箱已复制');
+    } catch (e) {
+      if (window.__toast) window.__toast(EMAIL);
+    }
+  });
+});
+
+// ========================================
+// 命令面板（⌘K / Ctrl+K）
+// ========================================
+safeRun('palette', function () {
+  const overlay = document.getElementById('paletteOverlay');
+  const input = document.getElementById('paletteInput');
+  const list = document.getElementById('paletteList');
+  if (!overlay || !input || !list) return;
+
+  const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+  let items = [];
+  let filtered = [];
+  let cursor = 0;
+
+  function dict() { return (window.__i18n && window.__i18n.dict()) || {}; }
+
+  function build() {
+    const d = dict();
+    const navItems = [
+      ['identity', d['nav.identity'] || '身份'],
+      ['about', d['nav.about'] || '关于我'],
+      ['timeline', d['nav.timeline'] || '轨迹'],
+      ['projects', d['nav.projects'] || '项目'],
+      ['campus', d['nav.campus'] || '校园'],
+      ['music', d['nav.music'] || '音乐'],
+      ['twin', d['nav.twin'] || '分身'],
+      ['guestbook', d['nav.guestbook'] || '留言'],
+      ['contact', d['nav.contact'] || '联系'],
+    ].map(([id, label]) => ({
+      kind: d['palette.goto'] || '跳转',
+      label,
+      run: () => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+    }));
+
+    const actions = [
+      {
+        kind: d['palette.action'] || '命令',
+        label: d['palette.theme'] || '切换主题',
+        run: () => document.getElementById('themeToggle')?.click(),
+      },
+      {
+        kind: d['palette.action'] || '命令',
+        label: d['palette.lang'] || '切换语言',
+        run: () => document.getElementById('langToggle')?.click(),
+      },
+      {
+        kind: d['palette.action'] || '命令',
+        label: d['palette.newChat'] || '数字分身：新对话',
+        run: () => {
+          document.getElementById('twin')?.scrollIntoView({ behavior: 'smooth' });
+          setTimeout(() => document.getElementById('twinReset')?.click(), 400);
+        },
+      },
+      {
+        kind: d['palette.action'] || '命令',
+        label: d['palette.copy'] || '复制邮箱',
+        run: () => document.getElementById('copyEmail')?.click(),
+      },
+      {
+        kind: d['palette.action'] || '命令',
+        label: d['palette.top'] || '回到顶部',
+        run: () => window.scrollTo({ top: 0, behavior: 'smooth' }),
+      },
+    ];
+
+    items = [...navItems, ...actions];
+  }
+
+  function render() {
+    const q = input.value.trim().toLowerCase();
+    filtered = q ? items.filter((it) => it.label.toLowerCase().includes(q)) : items;
+    cursor = 0;
+    if (!filtered.length) {
+      list.innerHTML = `<li class="palette-empty">${dict()['palette.empty'] || '没有匹配项'}</li>`;
+      return;
+    }
+    list.innerHTML = filtered.map((it, i) => `
+      <li role="option" class="${i === 0 ? 'active' : ''}" data-i="${i}">
+        <span>${it.label}</span><span class="p-kind">${it.kind}</span>
+      </li>`).join('');
+  }
+
+  function open() {
+    build();
+    input.value = '';
+    render();
+    overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => input.focus(), 30);
+  }
+
+  function close() {
+    overlay.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  function run(i) {
+    const it = filtered[i];
+    if (!it) return;
+    close();
+    setTimeout(it.run, 60);
+  }
+
+  function move(delta) {
+    if (!filtered.length) return;
+    cursor = (cursor + delta + filtered.length) % filtered.length;
+    [...list.children].forEach((li, i) => li.classList.toggle('active', i === cursor));
+    list.children[cursor]?.scrollIntoView({ block: 'nearest' });
+  }
+
+  input.addEventListener('input', render);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
+    else if (e.key === 'Enter') { e.preventDefault(); run(cursor); }
+    else if (e.key === 'Escape') { e.preventDefault(); close(); }
+  });
+  list.addEventListener('click', (e) => {
+    const li = e.target.closest('li[data-i]');
+    if (li) run(parseInt(li.dataset.i, 10));
+  });
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+
+  document.addEventListener('keydown', (e) => {
+    const mod = isMac ? e.metaKey : e.ctrlKey;
+    if (mod && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      overlay.hidden ? open() : close();
+    } else if (e.key === 'Escape' && !overlay.hidden) {
+      close();
+    }
+  });
+
+  const btn = document.getElementById('paletteBtn');
+  if (btn) btn.addEventListener('click', open);
+
+  window.__paletteOpen = open;
+  window.__paletteRebuild = build;
+});
+
+
+// ========================================
+// 图片灯箱
+// ========================================
+safeRun('lightbox', function () {
+  const box = document.getElementById('lightbox');
+  const img = document.getElementById('lightboxImg');
+  if (!box || !img) return;
+
+  function open(src, alt) {
+    img.src = src;
+    img.alt = alt || '';
+    box.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    box.hidden = true;
+    img.removeAttribute('src');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('click', (e) => {
+    const target = e.target.closest('.zoomable');
+    if (!target) return;
+    e.preventDefault();
+    open(target.currentSrc || target.src, target.alt);
+  });
+  box.addEventListener('click', (e) => {
+    if (e.target === box || e.target.classList.contains('lightbox-close')) close();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !box.hidden) close();
+  });
 });
 
 // ========================================

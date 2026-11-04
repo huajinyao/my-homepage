@@ -116,7 +116,7 @@
 <h2 id="s9">第二章　模型总体思路</h2>
 <h3 id="s10">2.1 建模基本方法</h3>
 <p>在本研究中，为了解决背景音乐与实际场景需求不匹配的问题，提出了一种基于场景特征与用户偏好的个性化歌单生成模型。研究的主要流程如下图：</p>
-<figure class="paper-figure"><img src="assets/paper/figure-2.png" alt="论文插图"></figure>
+<figure class="paper-figure"><img class="zoomable" src="assets/paper/figure-2.png" alt="论文插图"></figure>
 <p>该研究的流程可以分为四个主要步骤：</p>
 <ol class="paper-list">
   <li>场景特征分析与标签提取: 首先，针对不同应用场景（如咖啡厅、婚礼、博物馆等），通过文献调研与用户反馈，提炼出每个场景下的主要情感特征。每个场景都会提取出几组关键的音乐标签，这些标签代表了音乐在该场景中应传达的核心情感属性。例如，在咖啡厅场景中，常用的标签为“轻松”、“浪漫”、“抒情”等，而在婚礼场景可能会更侧重于“温馨”、“浪漫”、“庄重”等。</li>
@@ -197,7 +197,7 @@ D__db = librosa.amplitude__to__db(np.abs(D), ref=np.max)
 librosa . display . specshow(D__db, sr=sr, x__axis=’time ’, y__axis=’log’) plt . colorbar(format=’%+2.0f dB’)
 plt . title ( ’Spectrogram’) plt . show()</code></pre>
 <p>可得到如下频谱图，该图片（图3.1）展示了将音频数据降维并可视化后的数据图像。</p>
-<figure class="paper-figure"><img src="assets/paper/figure-3.png" alt="论文插图"></figure>
+<figure class="paper-figure"><img class="zoomable" src="assets/paper/figure-3.png" alt="论文插图"></figure>
 <p class="paper-caption">图 3.1: 音频文件的傅里叶频谱图</p>
 <h4 id="s21">3.2.2 结论</h4>
 <p>研究使用随机森林回归模型对收集到的音乐频谱数据进行分析，并结合之前所得标签的权重，得到该音乐数据集在咖啡厅这一场景下的最终得分：</p>
@@ -318,5 +318,11 @@ total scores = new scores @ weights</code></pre>
       © 2024 滑锦尧 · <a href="../index.html">返回主页</a>
     </p>
   </main>
+
+  <div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="查看大图">
+    <button class="lightbox-close" type="button" aria-label="关闭">×</button>
+    <img id="lightboxImg" alt="">
+  </div>
+  <script src="../script.js" defer></script>
 </body>
 </html>

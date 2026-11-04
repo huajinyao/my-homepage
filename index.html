@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0a0e14">
   <meta name="description" content="滑锦尧的个人主页 - 智能医学工程（脑机接口）· 天津大学与香港理工大学双校本科生">
   <title>滑锦尧 | 个人主页</title>
 
@@ -51,6 +53,7 @@
       </div>
 
       <div class="nav-actions">
+        <button class="theme-toggle" id="paletteBtn" aria-label="打开命令面板" title="⌘K / Ctrl+K" type="button">⌘</button>
         <button class="theme-toggle" id="themeToggle" aria-label="切换主题" type="button">🌙</button>
         <button class="lang-toggle" id="langToggle" aria-label="切换语言" type="button">EN</button>
       </div>
@@ -73,6 +76,9 @@
   <main>
     <section class="hero" id="hero">
       <canvas id="particleCanvas" role="img" aria-label="粒子网络背景"></canvas>
+      <svg class="hero-wave" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">
+        <path class="wave-line" d="M0,60 L180,60 L205,60 L215,32 L228,88 L240,18 L252,74 L262,60 L420,60 L440,60 L452,40 L466,80 L478,28 L490,70 L500,60 L700,60 L722,60 L734,44 L746,76 L758,34 L770,68 L782,60 L980,60 L1000,60 L1012,38 L1024,82 L1036,26 L1048,72 L1058,60 L1200,60"/>
+      </svg>
 
       <div class="hero-content">
         <div class="avatar" data-i18n="hero.avatar">滑</div>
@@ -82,6 +88,27 @@
         <div class="hero-actions">
           <a href="#projects" class="btn btn-primary" data-i18n="hero.btn1">查看我的项目</a>
           <a href="#guestbook" class="btn btn-ghost" data-i18n="hero.btn2">留言给我</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-strip" id="stats" aria-label="站点数据">
+      <div class="stats-inner">
+        <div class="stat">
+          <span class="stat-num" data-count="20">0</span>
+          <span class="stat-label" data-i18n="stats.music">首音乐收藏</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" data-count="6">0</span>
+          <span class="stat-label" data-i18n="stats.skills">项技能维度</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" data-count="5">0</span>
+          <span class="stat-label" data-i18n="stats.versions">个主页版本</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" data-count="1">0</span>
+          <span class="stat-label" data-i18n="stats.twin">个 AI 分身</span>
         </div>
       </div>
     </section>
@@ -341,6 +368,7 @@
         <p data-i18n="contact.desc">如果你对我的项目感兴趣，或者想交流学习心得，欢迎联系我。</p>
         <p>
           <a href="mailto:2761163826@qq.com" class="btn btn-primary" data-i18n="contact.email">发送邮件</a>
+          <button type="button" class="btn btn-ghost" id="copyEmail" data-i18n="contact.copy">复制邮箱</button>
           <a href="https://github.com/huajinyao" class="btn btn-ghost" target="_blank" rel="noopener">GitHub</a>
         </p>
         <p class="small">Email: 2761163826@qq.com</p>
@@ -367,6 +395,26 @@
   </div>
 
   <audio id="bgMusic" preload="none"></audio>
+
+  <div class="palette-overlay" id="paletteOverlay" hidden>
+    <div class="palette" role="dialog" aria-modal="true" aria-label="命令面板">
+      <div class="palette-input-row">
+        <span class="palette-icon" aria-hidden="true">⌘</span>
+        <input type="text" id="paletteInput" autocomplete="off" spellcheck="false"
+               data-i18n-ph="palette.placeholder" placeholder="搜索区块或执行命令…">
+        <kbd>ESC</kbd>
+      </div>
+      <ul class="palette-list" id="paletteList" role="listbox"></ul>
+      <p class="palette-foot"><kbd>↑</kbd><kbd>↓</kbd> <span data-i18n="palette.nav">选择</span> · <kbd>↵</kbd> <span data-i18n="palette.run">执行</span></p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="查看大图">
+    <button class="lightbox-close" type="button" aria-label="关闭">×</button>
+    <img id="lightboxImg" alt="">
+  </div>
 
   <script src="twin-config.js"></script>
   <script src="script.js" defer></script>

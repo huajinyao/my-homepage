@@ -1,0 +1,14 @@
+{
+  "name": "滑锦尧 | 个人主页",
+  "short_name": "滑锦尧",
+  "description": "智能医学工程（脑机接口）· 天大-港理工双校本科生",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0a0e14",
+  "theme_color": "#0a0e14",
+  "lang": "zh-CN",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
