@@ -759,6 +759,7 @@ safeRun('lang', function () {
       'twin.listening': '正在聆听…说完会自动发送',
       'twin.voiceCancel': '取消', 'twin.voiceDone': '结束并发送',
       'twin.retrying': '网络不稳，正在重试…',
+      'twin.switching': '正在切换线路…',
       'twin.err.networkHost': '连不上后端（{host}）。可能是当前网络限制了这个域名，换 4G/5G 或换个浏览器再试。',
       'twin.micDenied': '麦克风权限被拒绝，请在浏览器里允许麦克风后重试',
       'twin.micNetwork': '语音服务连不上：Chrome 的语音识别走 Google，国内常被拦截。建议改用 Edge 或 Safari，或直接键盘输入',
@@ -861,6 +862,7 @@ safeRun('lang', function () {
       'twin.listening': 'Listening… it sends automatically when you pause',
       'twin.voiceCancel': 'Cancel', 'twin.voiceDone': 'Finish and send',
       'twin.retrying': 'Network hiccup — retrying…',
+      'twin.switching': 'Switching route…',
       'twin.err.networkHost': 'Cannot reach the backend ({host}). Your network may block this domain — try mobile data or another browser.',
       'twin.micDenied': 'Microphone permission denied. Allow it in the browser and retry.',
       'twin.micNetwork': 'Speech service unreachable (Chrome relies on Google). Try Edge or Safari, or just type.',
@@ -991,7 +993,14 @@ safeRun('twin', function () {
   const dotEl = document.getElementById('twinDot');
   if (!form || !input || !messagesEl) return;
 
-  const API_BASE = (window.TWIN_API_BASE || '').replace(/\/+$/, '');
+  const API_BASES = (function () {
+    const list = (window.TWIN_API_BASES && window.TWIN_API_BASES.length)
+      ? window.TWIN_API_BASES
+      : [window.TWIN_API_BASE];
+    return list.filter(Boolean).map(function (b) { return b.replace(/\/+$/, ''); });
+  })();
+  let baseIndex = 0;
+  const API_BASE = API_BASES[0] || '';
   const STORAGE_KEY = 'huajinyao_twin_v2';
   const MAX_SEND = 16;
 
@@ -1110,14 +1119,42 @@ safeRun('twin', function () {
     }
     if (code === 'invalid' && err.message) return err.message;
     if ((err && err.name === 'TypeError') || !navigator.onLine) {
-      const host = API_BASE ? API_BASE.replace(/^https?:\/\//, '') : location.host;
+      const hosts = (API_BASES.length ? API_BASES : [location.origin])
+        .map(function (b) { return b.replace(/^https?:\/\//, ''); })
+        .join('、');
       const tpl = t('twin.err.networkHost', '连不上后端（{host}）。可能是当前网络限制了该域名，换 4G/5G 或换个浏览器再试。');
-      return tpl.replace('{host}', host);
+      return tpl.replace('{host}', hosts);
     }
     return t('twin.err.server', '模型服务暂时不可用，稍后再试。');
   }
 
   /* ------------------------- 流式请求 ------------------------- */
+  // 单个请求的超时包装：超时只作用于"拿到响应头"之前，
+  // 后续流式读取不受影响；用户点停止时仍会中断整个请求。
+  function fetchWithTimeout(url, opts, ms, outerSignal) {
+    const ctrl = new AbortController();
+    let timedOut = false;
+    const onOuterAbort = function () { ctrl.abort(); };
+    if (outerSignal) {
+      if (outerSignal.aborted) ctrl.abort();
+      else outerSignal.addEventListener('abort', onOuterAbort, { once: true });
+    }
+    const timer = setTimeout(function () { timedOut = true; ctrl.abort(); }, ms);
+    return fetch(url, Object.assign({}, opts, { signal: ctrl.signal }))
+      .catch(function (e) {
+        if (timedOut) {
+          const err = new Error('timeout');
+          err.name = 'TimeoutError';
+          throw err;
+        }
+        throw e;
+      })
+      .finally(function () {
+        clearTimeout(timer);
+        if (outerSignal) outerSignal.removeEventListener('abort', onOuterAbort);
+      });
+  }
+
   async function stream() {
     const bubble = addBubble('bot', '<span class="twin-typing"><i></i><i></i><i></i></span>', 'is-streaming');
     let text = '';
@@ -1143,22 +1180,30 @@ safeRun('twin', function () {
       });
       let res = null;
       let netErr = null;
-      for (let attempt = 0; attempt < 3; attempt++) {
-        try {
-          res = await fetch(API_BASE + '/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: payload,
-            signal: controller.signal
-          });
-          netErr = null;
-          break;
-        } catch (e) {
-          if (e && e.name === 'AbortError') throw e;
-          netErr = e;
-          if (attempt < 2) {
-            setStatus('busy', t('twin.retrying', '网络不稳，正在重试…'));
-            await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+      // 逐个节点尝试：同一节点再重试一次，仍失败就换下一个域名
+      outer:
+      for (let b = 0; b < API_BASES.length; b++) {
+        const idx = (baseIndex + b) % API_BASES.length;
+        const base = API_BASES[idx];
+        for (let attempt = 0; attempt < 2; attempt++) {
+          try {
+            res = await fetchWithTimeout(base + '/api/chat', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: payload
+            }, 12000, controller.signal);
+            baseIndex = idx;
+            netErr = null;
+            break outer;
+          } catch (e) {
+            if (e && e.name === 'AbortError') throw e;
+            netErr = e;
+            if (API_BASES.length > 1) {
+              setStatus('busy', t('twin.switching', '正在切换线路…'));
+            } else {
+              setStatus('busy', t('twin.retrying', '网络不稳，正在重试…'));
+            }
+            await new Promise(function (r) { setTimeout(r, 400 * (attempt + 1)); });
           }
         }
       }
@@ -1452,20 +1497,25 @@ safeRun('twin', function () {
   setBusy(false);
 
   // 探活：显示真实模型名，顺便让老师一眼看到后端已经接上
-  fetch(API_BASE + '/api/health')
-    .then(function (r) { return r.ok ? r.json() : null; })
-    .then(function (j) {
-      if (j && j.ok) {
-        state.model = j.model || 'DeepSeek';
-        statusReady();
-      } else {
-        setStatus('error', t('twin.err.config', '后端未连接'));
-      }
-    })
-    .catch(function () {
-      if (NEEDS_CONFIG) setStatus('error', t('twin.err.config', '后端未连接'));
-      else setStatus('error', t('twin.statusError', '连接异常'));
-    });
+  (async function probe() {
+    const bases = API_BASES.length ? API_BASES : [];
+    for (let i = 0; i < bases.length; i++) {
+      const idx = (baseIndex + i) % bases.length;
+      try {
+        const r = await fetchWithTimeout(bases[idx] + '/api/health', {}, 5000);
+        if (!r.ok) continue;
+        const j = await r.json();
+        if (j && j.ok) {
+          baseIndex = idx;
+          state.model = j.model || 'DeepSeek';
+          statusReady();
+          return;
+        }
+      } catch (e) { /* 试下一个 */ }
+    }
+    if (NEEDS_CONFIG) setStatus('error', t('twin.err.config', '后端未连接'));
+    else setStatus('error', t('twin.statusError', '连接异常'));
+  })();
 });
 
 // ========================================

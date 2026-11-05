@@ -82,7 +82,10 @@ function corsHeaders(request, env) {
     'Access-Control-Max-Age': '86400',
     Vary: 'Origin',
   };
-  if (originAllowed(origin, env)) h['Access-Control-Allow-Origin'] = origin;
+  // 白名单内的来源原样回显；其余来源回落到 *。
+  // 这个接口不读 Cookie、不带任何凭据，放宽来源不会造成越权，
+  // 但能避免"来源不在白名单 → 浏览器把 200 当成网络错误"这种假故障。
+  h['Access-Control-Allow-Origin'] = originAllowed(origin, env) && origin ? origin : '*';
   return h;
 }
 

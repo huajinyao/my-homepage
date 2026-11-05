@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>数字分身连接诊断</title>
-  <link rel="stylesheet" href="style.css?v=20261104c">
+  <link rel="stylesheet" href="style.css?v=20261105a">
   <style>
     body { padding: 2rem 1rem; }
     .diag { max-width: 720px; margin: 0 auto; }
@@ -40,14 +40,17 @@
     </p>
   </div>
 
-  <script src="twin-config.js?v=20261104c"></script>
+  <script src="twin-config.js?v=20261105a"></script>
   <script>
     (function () {
-      const base = (window.TWIN_API_BASE || '').replace(/\/+$/, '');
+      const bases = (window.TWIN_API_BASES && window.TWIN_API_BASES.length)
+        ? window.TWIN_API_BASES.slice()
+        : [(window.TWIN_API_BASE || '')].filter(Boolean);
+      const base = bases[0] || '';
       const $ = (id) => document.getElementById(id);
       const detail = [];
 
-      $('base').textContent = base || '(未配置)';
+      $('base').textContent = bases.length ? bases.join('  |  ') : '(未配置)';
       $('ua').textContent = navigator.userAgent;
       $('online').innerHTML = navigator.onLine
         ? '<span class="ok">在线</span>'
@@ -82,20 +85,30 @@
           return;
         }
 
-        const h = await timed('health', () =>
-          fetch(base + '/api/health', { cache: 'no-store' })
-        );
-        if (h.ok) {
-          const j = await h.r.json().catch(() => null);
-          mark($('health'), h.r.ok, `${h.r.status} · ${h.ms}ms · model=${j?.model || '?'}`);
-          log(`health: HTTP ${h.r.status}, ${h.ms}ms, body=${JSON.stringify(j).slice(0, 200)}`);
-        } else {
-          mark($('health'), false, `失败 · ${h.e?.name || 'Error'}: ${h.e?.message || ''}`);
-          log(`health: FAILED after ${h.ms}ms -> ${h.e}`);
+        const results = [];
+        for (const b of bases) {
+          const hh = await timed('health', () => fetch(b + '/api/health', { cache: 'no-store' }));
+          results.push({ b, ok: hh.ok && hh.r.ok, ms: hh.ms, status: hh.ok ? hh.r.status : null, err: hh.ok ? null : hh.e });
+          if (hh.ok && hh.r.ok) {
+            const j = await hh.r.json().catch(() => null);
+            log(`[${b}] health 200 · ${hh.ms}ms · model=${j?.model || '?'}`);
+          } else {
+            log(`[${b}] health FAILED after ${hh.ms}ms -> ${hh.ok ? 'HTTP ' + hh.r.status : hh.e}`);
+          }
         }
+        const good = results.find((r) => r.ok);
+        mark($('health'), !!good,
+          good ? `可用节点 ${good.b.replace(/^https?:\/\//, '')} · ${good.ms}ms`
+               : `全部节点不可达（${results.length} 个）`);
+        if (!good) {
+          mark($('chat'), false, '跳过（无可用节点）');
+          return;
+        }
+        const base2 = good.b;
+        const h = { ok: true, r: { ok: true, status: good.status }, ms: good.ms };
 
         const c = await timed('chat', () =>
-          fetch(base + '/api/chat', {
+          fetch(base2 + '/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ messages: [{ role: 'user', content: '你好' }] }),

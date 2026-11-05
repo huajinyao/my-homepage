@@ -179,13 +179,15 @@ await test('多轮历史按 HISTORY_TURNS 裁剪', async () => {
   assert.equal(last.messages.length, 17);
 });
 
-await test('CORS：白名单来源放行，第三方来源不给凭据', async () => {
+await test('CORS：白名单来源回显，其余来源回落为 *（公开接口、无凭据）', async () => {
   const ok = await post(`${BASE}/api/chat`, { messages: [{ role: 'user', content: 'hi' }] }, { Origin: ORIGIN });
   assert.equal(ok.headers.get('access-control-allow-origin'), ORIGIN);
   await readStream(ok);
 
-  const bad = await post(`${BASE}/api/chat`, { messages: [{ role: 'user', content: 'hi' }] }, { Origin: 'https://evil.example.com' });
-  assert.equal(bad.headers.get('access-control-allow-origin'), null);
+  const other = await post(`${BASE}/api/chat`, { messages: [{ role: 'user', content: 'hi' }] }, { Origin: 'https://other.example.com' });
+  assert.equal(other.headers.get('access-control-allow-origin'), '*');
+  assert.equal(other.headers.get('access-control-allow-credentials'), null);
+  await readStream(other);
 
   const pre = await fetch(`${BASE}/api/chat`, { method: 'OPTIONS', headers: { Origin: ORIGIN } });
   assert.equal(pre.status, 204);
